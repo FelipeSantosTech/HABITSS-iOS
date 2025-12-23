@@ -8,16 +8,35 @@ struct ContentView: View {
             Color.black
                 .ignoresSafeArea()
             VStack{
+                
                 Spacer()
-                VStack(spacing:12){
-                    Text("IrrevHabit does not motivate you")
-                    Text("It records what you actually do")
-                    Text("Misses are permanent")
+                
+                VStack(spacing:24){
+                    
+                    VStack(spacing:12){
+                        Text("IRREV does not motivate you")
+                        Text("It records what you actually do")
+                        Text("Misses are permanent")
+                    }
+                    
+                    Text("ARE YOU READY TO SEE THE TRUTH AND CHANGE YOUR REALITY?")
+                        .font(.headline)
+                    
+                    Button("YES"){
+                        print("Yes tapped")
+                    }
+                    
+                    .foregroundColor(.black)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white)
                 }
                 .foregroundColor(.white)
                 .font(.system(.body, design: .monospaced))
+                
                 Spacer()
             }
+            .padding(24)
         }
     }
 }
