@@ -11,4 +11,5 @@ import Combine
 class StandardsStore: ObservableObject {
     @Published var standards: [Standard] = []
     
+    @Published var isLocked: Bool = false
 }

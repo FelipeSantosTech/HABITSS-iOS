@@ -5,9 +5,8 @@
 
 import Foundation
 
-struct Standard: Identifiable, Codable {
-    let id: UUID
+struct Standard: Identifiable {
+    let id = UUID()
     let title: String
-    let createdAt: Date
-    let isLocked: Bool
+    var isDoneToday: Bool = false
 }

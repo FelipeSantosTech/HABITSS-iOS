@@ -1,23 +1,21 @@
 //
-//  MainView.swift
+//  SetupView.swift
 //  IrrevHabit
 //
-//  Created by Paulo Marcelo Santos on 24/12/25.
+//  Created by Paulo Marcelo Santos on 25/12/25.
 //
 
 import SwiftUI
-struct MainView: View {
-    
+
+struct SetupView: View {
     @EnvironmentObject var store: StandardsStore
     
     var body: some View {
-        
-        Text("Welcome to IRREV")
-            .font(.title)
+        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
 #Preview {
-    MainView()
+    SetupView()
         .environmentObject(StandardsStore())
 }
