@@ -1,12 +1,20 @@
+//
 //  Standard.swift
 //  IrrevHabit
-//  Created by Paulo Marcelo Santos on 24/12/25.
+//
+//  Created by Paulo Marcelo Santos on 26/12/25.
 //
 
 import Foundation
+ 
+enum DailyStatus: String, Codable {
+    case pending
+    case done
+    case missed
+}
 
-struct Standard: Identifiable {
-    let id = UUID()
+struct Standard: Identifiable, Codable {
+    let id: UUID
     let title: String
-    var isDoneToday: Bool = false
+    var status: DailyStatus
 }

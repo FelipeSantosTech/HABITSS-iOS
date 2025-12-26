@@ -4,8 +4,8 @@
 //
 import SwiftUI
 struct ContentView: View {
+  @EnvironmentObject var store: StandardsStore
   @AppStorage("acceptedReality") private var acceptedReality = false
-    @EnvironmentObject var store: StandardsStore
     
     var body: some View {
         if !acceptedReality {

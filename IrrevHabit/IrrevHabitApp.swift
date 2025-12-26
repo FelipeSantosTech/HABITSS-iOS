@@ -14,7 +14,7 @@ struct IrrevHabitApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(store: store)
+            ContentView()
                 .environmentObject(store)
         }
     }

@@ -7,7 +7,6 @@
 
 import SwiftUI
 struct MainView: View {
-    
     @EnvironmentObject var store: StandardsStore
     
     var body: some View {
