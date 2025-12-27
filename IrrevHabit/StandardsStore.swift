@@ -10,10 +10,15 @@ import Combine
 
 class StandardsStore: ObservableObject {
     @Published var standards: [Standard] = []
+    @Published var hasCompletedOnboarding: Bool = false
+    @Published var areStandardsLocked: Bool = false
     
-    @Published var isLocked: Bool = false
+    var canLockStandards: Bool {
+        !standards.isEmpty && !areStandardsLocked
+    }
     
-    func lockStandards() {
-        isLocked = true
+    func lockStandards (){
+        guard canLockStandards else { return }
+        areStandardsLocked = true
     }
 }

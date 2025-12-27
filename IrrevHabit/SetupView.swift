@@ -12,23 +12,38 @@ struct SetupView: View {
     @State private var newStandardTitle: String = ""
     
     var body: some View {
-        VStack (spacing: 16){
+        VStack (spacing: 24){
             Text("Define your Daily Standards")
                 .font(.title2)
                 .fontWeight(.bold)
-            
-            TextField("Enter a standard", text: $newStandardTitle)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
-            
-            Button("Add Standard"){
-                addStandard()
+           
+            VStack(spacing: 12) {
+                TextField("Enter a standard", text: $newStandardTitle)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                
+                Button("Add Standard"){
+                    addStandard()
+                }
+                .disabled(newStandardTitle.trimmingCharacters(in: .whitespaces).isEmpty)
             }
-            .disabled(newStandardTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-            
             List(store.standards) { standard in
                 Text(standard.title)
             }
+            
+            Divider()
+            
+            VStack(spacing: 12) {
+                Text("Once locked, standards cannot be changed.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                
+                Button("LOCK STANDARDS") {
+                    store.lockStandards()
+                }
+                .disabled(!store.canLockStandards)
+                .buttonStyle(.borderedProminent)
+            }
+            
         }
         .padding()
     }
