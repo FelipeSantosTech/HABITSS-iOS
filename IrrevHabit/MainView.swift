@@ -11,6 +11,7 @@ struct MainView: View {
     
     var body: some View {
         
+        
         ZStack{
             Color.black.ignoresSafeArea()
             
@@ -37,6 +38,9 @@ struct MainView: View {
             }
             .padding()
         }
+        .onAppear {
+            store.resetForNewDayIfNeeded()
+        }
     }
     @ViewBuilder
     private func standardCard(for index: Int) -> some View {
@@ -50,7 +54,7 @@ struct MainView: View {
             if standard.status == .pending {
                 HStack(spacing: 12) {
                     Button("DONE") {
-                        markDone(index)
+                        store.markDone(at: index)
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -59,7 +63,7 @@ struct MainView: View {
                     .cornerRadius(6)
                     
                     Button("MISSED"){
-                        markMissed(index)
+                        store.markMissed(at: index)
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -77,14 +81,6 @@ struct MainView: View {
         .padding()
         .background(Color(white: 0.08))
         .cornerRadius(8)
-    }
-    
-    private func markDone (_ index: Int) {
-        store.standards[index].status = .done
-    }
-    
-    private func markMissed (_ index: Int) {
-        store.standards[index].status = .missed
     }
 }
 
