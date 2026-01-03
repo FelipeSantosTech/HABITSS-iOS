@@ -10,6 +10,8 @@ import Combine
 import SwiftUI
 
 class StandardsStore: ObservableObject {
+    @AppStorage("dailyHistory")
+    private var dailyHistoryData: Data = Data()
     @Published var standards: [Standard] = []
     @Published var hasCompletedOnboarding: Bool = false
     @Published var areStandardsLocked: Bool = false
@@ -66,21 +68,71 @@ class StandardsStore: ObservableObject {
                 standards[index].status = .missed
             }
         }
-        
+        logTodayIfNeeded()
+
         for index in standards.indices{
             standards[index].status = .pending
         }
         
         lastExecutionDate = today.timeIntervalSince1970
     }
+    func logTodayIfNeeded() {
+        let today = Calendar.current.startOfDay(for: Date())
+
+        // Prevent double logging
+        let alreadyLogged = dailyHistory.contains {
+            Calendar.current.isDate($0.date, inSameDayAs: today)
+        }
+
+        guard !alreadyLogged else { return }
+
+        var newHistory = dailyHistory
+
+        for standard in standards {
+            let record = DailyRecord(
+                id: UUID(),
+                date: today,
+                standardID: standard.id,
+                status: standard.status
+            )
+            newHistory.append(record)
+        }
+
+        dailyHistory = newHistory
+    }
     
     func markDone(at index: Int) {
-        guard standards[index].status == .pending else {return}
+        guard standards[index].status == DailyStatus.pending else { return }
         standards[index].status = .done
+
+        if isDayComplete {
+            logTodayIfNeeded()
+        }
     }
-    
+
     func markMissed(at index: Int) {
-        guard standards[index].status == .pending else {return}
+        guard standards[index].status == DailyStatus.pending else { return }
         standards[index].status = .missed
+
+        if isDayComplete {
+            logTodayIfNeeded()
+        }
     }
+
+    
+    private var dailyHistory: [DailyRecord] {
+        get {
+            guard
+                let decoded = try? JSONDecoder().decode([DailyRecord].self, from: dailyHistoryData)
+            else {
+                return []
+            }
+            return decoded
+        }
+        set {
+            dailyHistoryData = (try? JSONEncoder().encode(newValue)) ?? Data()
+        }
+        
+    }
+
 }

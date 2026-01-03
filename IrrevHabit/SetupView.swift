@@ -96,7 +96,7 @@ struct SetupView: View {
                     
                 }
                 
-                Spacer()
+                .padding(.bottom, 40)
                 //Lock section
                 VStack(spacing: 12) {
                     Text("Once locked, standards cannot be changed.")
