@@ -100,6 +100,10 @@ class StandardsStore: ObservableObject {
 
         dailyHistory = newHistory
     }
+    var history: [DailyRecord] {
+        dailyHistory
+    }
+
     
     func markDone(at index: Int) {
         guard standards[index].status == DailyStatus.pending else { return }

@@ -13,7 +13,18 @@ struct ContentView: View {
         } else if !store.areStandardsLocked{
             SetupView()
         } else {
-            MainView()
+            TabView {
+                MainView()
+                    .tabItem {
+                        Label("Execute", systemImage: "checkmark.circle")
+                    }
+
+                HistoryView()
+                    .tabItem {
+                        Label("History", systemImage: "square.grid.3x3")
+                    }
+            }
+
         }
     }
 }
