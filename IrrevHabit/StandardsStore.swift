@@ -10,9 +10,15 @@ import Combine
 import SwiftUI
 
 class StandardsStore: ObservableObject {
+    @AppStorage("standardsData")
+    private var standardsData: Data = Data()
     @AppStorage("dailyHistory")
     private var dailyHistoryData: Data = Data()
-    @Published var standards: [Standard] = []
+    @Published var standards: [Standard] = [] {
+        didSet {
+            persistStandards()
+        }
+    }
     @Published var hasCompletedOnboarding: Bool = false
     @Published var areStandardsLocked: Bool = false
     
@@ -20,6 +26,21 @@ class StandardsStore: ObservableObject {
 
     var canAddStandard: Bool {
         standards.count < maxStandards && !areStandardsLocked
+    }
+    private func persistStandards() {
+        standardsData = (try? JSONEncoder().encode(standards)) ?? Data()
+    }
+
+    private func loadStandards() {
+        guard
+            let decoded = try? JSONDecoder().decode([Standard].self, from: standardsData)
+        else {
+            return
+        }
+        standards = decoded
+    }
+    init() {
+        loadStandards()
     }
 
     func addStandard(title: String) {
