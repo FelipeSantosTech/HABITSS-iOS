@@ -11,7 +11,7 @@ import SwiftUI
 struct HistoryView: View {
     @EnvironmentObject var store: StandardsStore
 
-    private let daysToShow = 90
+    private let daysToShow = 364
 
     var body: some View {
         ZStack {
@@ -43,7 +43,6 @@ struct HistoryView: View {
         }
     }
     private func standardHistoryPanel(for standard: Standard) -> some View {
-        let days = lastDays(daysToShow)
         let records = historyForStandard(standard.id)
 
         return VStack(alignment: .leading, spacing: 12) {
@@ -51,18 +50,24 @@ struct HistoryView: View {
                 .foregroundColor(.white)
                 .fontWeight(.medium)
 
-            LazyVGrid(
-                columns: Array(repeating: GridItem(.fixed(10), spacing: 4), count: 10),
-                spacing: 4
-            ) {
-                ForEach(days, id: \.self) { day in
-                    let status = records[day]
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyVGrid(
+                    columns: Array(
+                        repeating: GridItem(.fixed(10), spacing: 4),
+                        count: numberOfWeeks
+                    ),
+                    spacing: 4
+                ) {
+                    ForEach(gridDays, id: \.self) { day in
+                        let status = records[day]
 
-                    Rectangle()
-                        .fill(color(for: status))
-                        .frame(width: 12, height: 12)
-                        .cornerRadius(2)
+                        Rectangle()
+                            .fill(color(for: status))
+                            .frame(width: 10, height: 10)
+                            .cornerRadius(2)
+                    }
                 }
+                .padding(.vertical, 4)
             }
         }
     }
@@ -91,11 +96,40 @@ struct HistoryView: View {
     private func color(for status: DailyStatus?) -> Color {
         switch status {
         case .done:
-            return .white
+            return .green
         case .missed:
-            return Color(white: 0.2)
+            return .red
         default:
-            return Color(white: 0.08)
+            return Color(white: 0.15)
+        }
+    }
+    
+    private var numberOfWeeks: Int {
+        Int(ceil(Double(daysToShow) / 7.0))
+    }
+
+    private var gridDays: [Date] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        let startDate = calendar.date(
+            byAdding: .day,
+            value: -(daysToShow - 1),
+            to: today
+        )!
+
+        // Align start date to beginning of week (Sunday)
+        let weekday = calendar.component(.weekday, from: startDate)
+        let alignedStart = calendar.date(
+            byAdding: .day,
+            value: -(weekday - 1),
+            to: startDate
+        )!
+
+        let totalDays = numberOfWeeks * 7
+
+        return (0..<totalDays).compactMap {
+            calendar.date(byAdding: .day, value: $0, to: alignedStart)
         }
     }
 
