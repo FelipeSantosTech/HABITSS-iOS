@@ -44,23 +44,6 @@ class StandardsStore: ObservableObject {
     init() {
         loadStandards()
         loadHistory()
-        // #region agent log
-        AgentDebugLog.log(
-            runId: "baseline",
-            hypothesisId: "H1/H3",
-            location: "StandardsStore.swift:init",
-            message: "Store initialized",
-            data: [
-                "standardsCount": standards.count,
-                "areStandardsLocked": areStandardsLocked,
-                "hasCompletedOnboarding": hasCompletedOnboarding,
-                "standardsDataBytes": standardsData.count,
-                "dailyHistoryDataBytes": dailyHistoryData.count,
-                "historyDataBytes": historyData.count,
-                "historyComputedCount": history.count
-            ]
-        )
-        // #endregion
     }
 
 
@@ -93,15 +76,6 @@ class StandardsStore: ObservableObject {
     func lockStandards (){
         guard canLockStandards else { return }
         areStandardsLocked = true
-        // #region agent log
-        AgentDebugLog.log(
-            runId: "baseline",
-            hypothesisId: "H1",
-            location: "StandardsStore.swift:lockStandards",
-            message: "Standards locked",
-            data: ["standardsCount": standards.count, "areStandardsLocked": areStandardsLocked]
-        )
-        // #endregion
         resetForNewDayIfNeeded()
     }
     
@@ -163,21 +137,6 @@ class StandardsStore: ObservableObject {
 
 
         dailyHistory = newHistory
-        // #region agent log
-        AgentDebugLog.log(
-            runId: "baseline",
-            hypothesisId: "H2/H3",
-            location: "StandardsStore.swift:logTodayIfNeeded",
-            message: "Attempted to log today",
-            data: [
-                "alreadyLogged": alreadyLogged,
-                "standardsCount": standards.count,
-                "isDayComplete": isDayComplete,
-                "dailyHistoryCountAfter": dailyHistory.count,
-                "historyComputedCountAfter": history.count
-            ]
-        )
-        // #endregion
     }
     var history: [DailyRecord] {
         dailyHistory
@@ -200,23 +159,9 @@ class StandardsStore: ObservableObject {
     
     func markDone(at index: Int) {
         guard standards[index].status == DailyStatus.pending else { return }
-        let before = standards[index].status.rawValue
+        _ = standards[index].status.rawValue
         standards[index].status = .done
-        // #region agent log
-        AgentDebugLog.log(
-            runId: "baseline",
-            hypothesisId: "H2",
-            location: "StandardsStore.swift:markDone",
-            message: "Marked done",
-            data: [
-                "index": index,
-                "before": before,
-                "after": standards[index].status.rawValue,
-                "isDayComplete": isDayComplete
-            ]
-        )
-        // #endregion
-
+    
         if isDayComplete {
             logTodayIfNeeded()
         }
@@ -224,22 +169,8 @@ class StandardsStore: ObservableObject {
 
     func markMissed(at index: Int) {
         guard standards[index].status == DailyStatus.pending else { return }
-        let before = standards[index].status.rawValue
+        _ = standards[index].status.rawValue
         standards[index].status = .missed
-        // #region agent log
-        AgentDebugLog.log(
-            runId: "baseline",
-            hypothesisId: "H2",
-            location: "StandardsStore.swift:markMissed",
-            message: "Marked missed",
-            data: [
-                "index": index,
-                "before": before,
-                "after": standards[index].status.rawValue,
-                "isDayComplete": isDayComplete
-            ]
-        )
-        // #endregion
 
         if isDayComplete {
             logTodayIfNeeded()

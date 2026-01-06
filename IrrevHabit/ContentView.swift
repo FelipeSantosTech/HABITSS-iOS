@@ -28,22 +28,6 @@ struct ContentView: View {
 
             }
         }
-        .onAppear {
-            // #region agent log
-            AgentDebugLog.log(
-                runId: "baseline",
-                hypothesisId: "H1",
-                location: "ContentView.swift:onAppear",
-                message: "ContentView decided root flow",
-                data: [
-                    "acceptedReality": acceptedReality,
-                    "areStandardsLocked": store.areStandardsLocked,
-                    "standardsCount": store.standards.count,
-                    "historyComputedCount": store.history.count
-                ]
-            )
-            // #endregion
-        }
     }
 }
 
