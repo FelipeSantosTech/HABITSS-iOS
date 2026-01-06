@@ -41,6 +41,20 @@ struct HistoryView: View {
                 .padding()
             }
         }
+        .onAppear {
+            // #region agent log
+            AgentDebugLog.log(
+                runId: "baseline",
+                hypothesisId: "H2/H3",
+                location: "HistoryView.swift:onAppear",
+                message: "HistoryView appeared",
+                data: [
+                    "standardsCount": store.standards.count,
+                    "historyComputedCount": store.history.count
+                ]
+            )
+            // #endregion
+        }
     }
     private func standardHistoryPanel(for standard: Standard) -> some View {
         let records = historyForStandard(standard.id)

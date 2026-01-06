@@ -14,6 +14,8 @@ class StandardsStore: ObservableObject {
     private var standardsData: Data = Data()
     @AppStorage("dailyHistory")
     private var dailyHistoryData: Data = Data()
+    @AppStorage("historyData")
+    private var historyData: Data = Data()
     @Published var standards: [Standard] = [] {
         didSet {
             persistStandards()
@@ -41,7 +43,26 @@ class StandardsStore: ObservableObject {
     }
     init() {
         loadStandards()
+        loadHistory()
+        // #region agent log
+        AgentDebugLog.log(
+            runId: "baseline",
+            hypothesisId: "H1/H3",
+            location: "StandardsStore.swift:init",
+            message: "Store initialized",
+            data: [
+                "standardsCount": standards.count,
+                "areStandardsLocked": areStandardsLocked,
+                "hasCompletedOnboarding": hasCompletedOnboarding,
+                "standardsDataBytes": standardsData.count,
+                "dailyHistoryDataBytes": dailyHistoryData.count,
+                "historyDataBytes": historyData.count,
+                "historyComputedCount": history.count
+            ]
+        )
+        // #endregion
     }
+
 
     func addStandard(title: String) {
         guard canAddStandard else { return }
@@ -72,6 +93,15 @@ class StandardsStore: ObservableObject {
     func lockStandards (){
         guard canLockStandards else { return }
         areStandardsLocked = true
+        // #region agent log
+        AgentDebugLog.log(
+            runId: "baseline",
+            hypothesisId: "H1",
+            location: "StandardsStore.swift:lockStandards",
+            message: "Standards locked",
+            data: ["standardsCount": standards.count, "areStandardsLocked": areStandardsLocked]
+        )
+        // #endregion
         resetForNewDayIfNeeded()
     }
     
@@ -107,28 +137,85 @@ class StandardsStore: ObservableObject {
 
         guard !alreadyLogged else { return }
 
-        var newHistory = dailyHistory
+        let newHistory = dailyHistory
 
-        for standard in standards {
+        func mark(_ standard: Standard, as status: DailyStatus) {
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: Date())
+
+            // Remove existing record for today & standard
+            dailyHistory.removeAll {
+                calendar.isDate($0.date, inSameDayAs: today)
+                && $0.standardID == standard.id
+            }
+
+            // Add new record
             let record = DailyRecord(
                 id: UUID(),
                 date: today,
                 standardID: standard.id,
-                status: standard.status
+                status: status
             )
-            newHistory.append(record)
+
+            dailyHistory.append(record)
+            persistHistory()
         }
 
+
         dailyHistory = newHistory
+        // #region agent log
+        AgentDebugLog.log(
+            runId: "baseline",
+            hypothesisId: "H2/H3",
+            location: "StandardsStore.swift:logTodayIfNeeded",
+            message: "Attempted to log today",
+            data: [
+                "alreadyLogged": alreadyLogged,
+                "standardsCount": standards.count,
+                "isDayComplete": isDayComplete,
+                "dailyHistoryCountAfter": dailyHistory.count,
+                "historyComputedCountAfter": history.count
+            ]
+        )
+        // #endregion
     }
     var history: [DailyRecord] {
         dailyHistory
     }
+    private func persistHistory() {
+        historyData = (try? JSONEncoder().encode(dailyHistory)) ?? Data()
+    }
+
+    private func loadHistory() {
+        guard
+            let decoded = try? JSONDecoder().decode([DailyRecord].self, from: historyData)
+        else {
+            return
+        }
+
+        dailyHistory = decoded
+    }
+
 
     
     func markDone(at index: Int) {
         guard standards[index].status == DailyStatus.pending else { return }
+        let before = standards[index].status.rawValue
         standards[index].status = .done
+        // #region agent log
+        AgentDebugLog.log(
+            runId: "baseline",
+            hypothesisId: "H2",
+            location: "StandardsStore.swift:markDone",
+            message: "Marked done",
+            data: [
+                "index": index,
+                "before": before,
+                "after": standards[index].status.rawValue,
+                "isDayComplete": isDayComplete
+            ]
+        )
+        // #endregion
 
         if isDayComplete {
             logTodayIfNeeded()
@@ -137,7 +224,22 @@ class StandardsStore: ObservableObject {
 
     func markMissed(at index: Int) {
         guard standards[index].status == DailyStatus.pending else { return }
+        let before = standards[index].status.rawValue
         standards[index].status = .missed
+        // #region agent log
+        AgentDebugLog.log(
+            runId: "baseline",
+            hypothesisId: "H2",
+            location: "StandardsStore.swift:markMissed",
+            message: "Marked missed",
+            data: [
+                "index": index,
+                "before": before,
+                "after": standards[index].status.rawValue,
+                "isDayComplete": isDayComplete
+            ]
+        )
+        // #endregion
 
         if isDayComplete {
             logTodayIfNeeded()

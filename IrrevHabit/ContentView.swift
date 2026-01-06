@@ -8,23 +8,41 @@ struct ContentView: View {
   @AppStorage("acceptedReality") private var acceptedReality = false
     
     var body: some View {
-        if !acceptedReality {
-            OnboardingView()
-        } else if !store.areStandardsLocked{
-            SetupView()
-        } else {
-            TabView {
-                MainView()
-                    .tabItem {
-                        Label("Execute", systemImage: "checkmark.circle")
-                    }
+        Group {
+            if !acceptedReality {
+                OnboardingView()
+            } else if !store.areStandardsLocked{
+                SetupView()
+            } else {
+                TabView {
+                    MainView()
+                        .tabItem {
+                            Label("Execute", systemImage: "checkmark.circle")
+                        }
 
-                HistoryView()
-                    .tabItem {
-                        Label("History", systemImage: "square.grid.3x3")
-                    }
+                    HistoryView()
+                        .tabItem {
+                            Label("History", systemImage: "square.grid.3x3")
+                        }
+                }
+
             }
-
+        }
+        .onAppear {
+            // #region agent log
+            AgentDebugLog.log(
+                runId: "baseline",
+                hypothesisId: "H1",
+                location: "ContentView.swift:onAppear",
+                message: "ContentView decided root flow",
+                data: [
+                    "acceptedReality": acceptedReality,
+                    "areStandardsLocked": store.areStandardsLocked,
+                    "standardsCount": store.standards.count,
+                    "historyComputedCount": store.history.count
+                ]
+            )
+            // #endregion
         }
     }
 }
