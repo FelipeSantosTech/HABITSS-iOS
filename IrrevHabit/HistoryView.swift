@@ -11,7 +11,7 @@ import SwiftUI
 struct HistoryView: View {
     @EnvironmentObject var store: StandardsStore
 
-    private let daysToShow = 30
+    private let daysToShow = 90
 
     var body: some View {
         ZStack {
@@ -52,8 +52,8 @@ struct HistoryView: View {
                 .fontWeight(.medium)
 
             LazyVGrid(
-                columns: Array(repeating: GridItem(.fixed(12), spacing: 6), count: 10),
-                spacing: 6
+                columns: Array(repeating: GridItem(.fixed(10), spacing: 4), count: 10),
+                spacing: 4
             ) {
                 ForEach(days, id: \.self) { day in
                     let status = records[day]
