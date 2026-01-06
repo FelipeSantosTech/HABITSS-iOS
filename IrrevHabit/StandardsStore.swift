@@ -22,7 +22,8 @@ class StandardsStore: ObservableObject {
         }
     }
     @Published var hasCompletedOnboarding: Bool = false
-    @Published var areStandardsLocked: Bool = false
+    @AppStorage("areStandardsLocked")
+    var areStandardsLocked: Bool = false
     
     let maxStandards = 5
 
