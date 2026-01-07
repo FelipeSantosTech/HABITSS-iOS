@@ -8,9 +8,17 @@
 
 import Foundation
 
-struct DailyRecord: Codable, Identifiable {
+struct DailyRecord: Identifiable, Codable {
     let id: UUID
     let date: Date
     let standardID: UUID
     let status: DailyStatus
+
+    init(date: Date, standardID: UUID, status: DailyStatus) {
+        self.id = UUID()
+        self.date = date
+        self.standardID = standardID
+        self.status = status
+    }
 }
+

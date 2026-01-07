@@ -7,6 +7,7 @@
 
 import Foundation
  
+
 enum DailyStatus: String, Codable {
     case pending
     case done

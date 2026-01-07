@@ -21,6 +21,7 @@ class StandardsStore: ObservableObject {
             persistStandards()
         }
     }
+    
     @Published var hasCompletedOnboarding: Bool = false
     @AppStorage("areStandardsLocked")
     var areStandardsLocked: Bool = false
@@ -126,7 +127,6 @@ class StandardsStore: ObservableObject {
 
             // Add new record
             let record = DailyRecord(
-                id: UUID(),
                 date: today,
                 standardID: standard.id,
                 status: status

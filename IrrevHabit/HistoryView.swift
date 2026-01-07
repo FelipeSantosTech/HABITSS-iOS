@@ -11,7 +11,7 @@ import SwiftUI
 struct HistoryView: View {
     @EnvironmentObject var store: StandardsStore
 
-    private let daysToShow = 364
+    private let daysToShow = 182
 
     var body: some View {
         ZStack {
@@ -59,7 +59,8 @@ struct HistoryView: View {
                     spacing: 4
                 ) {
                     ForEach(gridDays, id: \.self) { day in
-                        let status = records[day]
+                        let normalizedDay = Calendar.current.startOfDay(for: day)
+                        let status = records[normalizedDay]
 
                         Rectangle()
                             .fill(color(for: status))
