@@ -40,6 +40,9 @@ struct HistoryView: View {
                 }
                 .padding()
             }
+            .onAppear {
+                print("History count:", store.history.count)
+            }
         }
     }
     private func standardHistoryPanel(for standard: Standard) -> some View {
