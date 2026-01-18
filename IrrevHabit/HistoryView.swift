@@ -46,8 +46,6 @@ struct HistoryView: View {
         }
     }
     private func standardHistoryPanel(for standard: Standard) -> some View {
-        let records = historyForStandard(standard.id)
-
         return VStack(alignment: .leading, spacing: 12) {
             Text(standard.title)
                 .foregroundColor(.white)
@@ -62,8 +60,7 @@ struct HistoryView: View {
                     spacing: 4
                 ) {
                     ForEach(gridDays, id: \.self) { day in
-                        let normalizedDay = Calendar.current.startOfDay(for: day)
-                        let status = records[normalizedDay]
+                        let status = statusForDay(day, standardID: standard.id)
 
                         Rectangle()
                             .fill(color(for: status))
@@ -85,17 +82,15 @@ struct HistoryView: View {
             .reversed()
     }
 
-    private func historyForStandard(_ id: UUID) -> [Date: DailyStatus] {
-        var map: [Date: DailyStatus] = [:]
+    private func statusForDay(_ day: Date, standardID: UUID) -> DailyStatus? {
         let calendar = Calendar.current
 
-        for record in store.history where record.standardID == id {
-            let day = calendar.startOfDay(for: record.date)
-            map[day] = record.status
-        }
-
-        return map
+        return store.history.first {
+            $0.standardID == standardID &&
+            calendar.isDate($0.date, inSameDayAs: day)
+        }?.status
     }
+
 
     private func color(for status: DailyStatus?) -> Color {
         switch status {
