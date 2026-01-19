@@ -52,10 +52,10 @@ struct HistoryView: View {
                 .fontWeight(.medium)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyVGrid(
-                    columns: Array(
+                LazyHGrid(
+                    rows: Array(
                         repeating: GridItem(.fixed(10), spacing: 4),
-                        count: numberOfWeeks
+                        count: 7
                     ),
                     spacing: 4
                 ) {
