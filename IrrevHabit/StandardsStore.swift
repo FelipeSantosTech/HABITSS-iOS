@@ -92,10 +92,6 @@ class StandardsStore: ObservableObject {
         guard !Calendar.current.isDate(today, inSameDayAs: lastDate) else {
             return
         }
-
-        // ✅ First: log yesterday's final state
-        logTodayIfNeeded()
-
         // ✅ Then: reset all standards for the new day
         for index in standards.indices {
             standards[index].status = .pending
@@ -103,54 +99,42 @@ class StandardsStore: ObservableObject {
 
         lastExecutionDate = today.timeIntervalSince1970
     }
-    func logTodayIfNeeded() {
+    
+    func logStandard(_ standard: Standard) {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
-        // Prevent double logging for the same day
-        let alreadyLogged = history.contains {
+        // Remove existing record for this habit today (overwrite)
+        history.removeAll {
+            $0.standardID == standard.id &&
             calendar.isDate($0.date, inSameDayAs: today)
         }
 
-        guard !alreadyLogged else { return }
+        let record = DailyRecord(
+            date: today,
+            standardID: standard.id,
+            status: standard.status
+        )
 
-        var newRecords: [DailyRecord] = []
-
-        for standard in standards {
-            guard standard.status != .pending else { continue }
-
-            let record = DailyRecord(
-                date: today,
-                standardID: standard.id,
-                status: standard.status
-            )
-
-            newRecords.append(record)
-        }
-
-        history.append(contentsOf: newRecords)
+        history.append(record)
     }
 
     
     func markDone(at index: Int) {
-        guard standards[index].status == DailyStatus.pending else { return }
-        _ = standards[index].status.rawValue
+        guard standards[index].status == .pending else { return }
+
         standards[index].status = .done
-    
-        if isDayComplete {
-            logTodayIfNeeded()
-        }
+        logStandard(standards[index])
     }
+
 
     func markMissed(at index: Int) {
-        guard standards[index].status == DailyStatus.pending else { return }
-        _ = standards[index].status.rawValue
-        standards[index].status = .missed
+        guard standards[index].status == .pending else { return }
 
-        if isDayComplete {
-            logTodayIfNeeded()
-        }
+        standards[index].status = .missed
+        logStandard(standards[index])
     }
+
 
     private func loadHistory() {
         guard
