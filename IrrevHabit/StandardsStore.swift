@@ -19,7 +19,12 @@ class StandardsStore: ObservableObject {
             persistStandards()
         }
     }
-    
+    @Published var history: [DailyRecord] = [] {
+        didSet {
+            dailyHistoryData = (try? JSONEncoder().encode(history)) ?? Data()
+        }
+    }
+
     @Published var hasCompletedOnboarding: Bool = false
     @AppStorage("areStandardsLocked")
     var areStandardsLocked: Bool = false
@@ -43,7 +48,9 @@ class StandardsStore: ObservableObject {
     }
     init() {
         loadStandards()
+        loadHistory()
     }
+
 
 
     func addStandard(title: String) {
@@ -81,23 +88,19 @@ class StandardsStore: ObservableObject {
     func resetForNewDayIfNeeded() {
         let today = Calendar.current.startOfDay(for: Date())
         let lastDate = Date(timeIntervalSince1970: lastExecutionDate)
-        
+
         guard !Calendar.current.isDate(today, inSameDayAs: lastDate) else {
             return
         }
-        
-        
-        for index in standards.indices {
-            if standards[index].status == .pending {
-                standards[index].status = .missed
-            }
-        }
+
+        // ✅ First: log yesterday's final state
         logTodayIfNeeded()
 
-        for index in standards.indices{
+        // ✅ Then: reset all standards for the new day
+        for index in standards.indices {
             standards[index].status = .pending
         }
-        
+
         lastExecutionDate = today.timeIntervalSince1970
     }
     func logTodayIfNeeded() {
@@ -105,7 +108,7 @@ class StandardsStore: ObservableObject {
         let today = calendar.startOfDay(for: Date())
 
         // Prevent double logging for the same day
-        let alreadyLogged = dailyHistory.contains {
+        let alreadyLogged = history.contains {
             calendar.isDate($0.date, inSameDayAs: today)
         }
 
@@ -125,12 +128,9 @@ class StandardsStore: ObservableObject {
             newRecords.append(record)
         }
 
-        dailyHistory.append(contentsOf: newRecords)
+        history.append(contentsOf: newRecords)
     }
 
-    var history: [DailyRecord] {
-        dailyHistory
-    }
     
     func markDone(at index: Int) {
         guard standards[index].status == DailyStatus.pending else { return }
@@ -152,20 +152,15 @@ class StandardsStore: ObservableObject {
         }
     }
 
-    
-    private var dailyHistory: [DailyRecord] {
-        get {
-            guard
-                let decoded = try? JSONDecoder().decode([DailyRecord].self, from: dailyHistoryData)
-            else {
-                return []
-            }
-            return decoded
+    private func loadHistory() {
+        guard
+            let decoded = try? JSONDecoder().decode([DailyRecord].self, from: dailyHistoryData)
+        else {
+            return
         }
-        set {
-            dailyHistoryData = (try? JSONEncoder().encode(newValue)) ?? Data()
-        }
-        
+
+        history = decoded
     }
+
 }
 

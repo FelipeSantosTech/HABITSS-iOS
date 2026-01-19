@@ -42,6 +42,12 @@ struct HistoryView: View {
             }
             .onAppear {
                 print("History count:", store.history.count)
+                for record in store.history {
+                    print("record",
+                          record.standardID,
+                          record.status,
+                          record.date)
+                }
             }
         }
     }
@@ -70,6 +76,7 @@ struct HistoryView: View {
                 }
                 .padding(.vertical, 4)
             }
+            .frame(height: 7 * 14)
         }
     }
 
@@ -83,13 +90,14 @@ struct HistoryView: View {
     }
 
     private func statusForDay(_ day: Date, standardID: UUID) -> DailyStatus? {
-        let calendar = Calendar.current
+        let targetKey = dayKey(day)
 
         return store.history.first {
             $0.standardID == standardID &&
-            calendar.isDate($0.date, inSameDayAs: day)
+            dayKey($0.date) == targetKey
         }?.status
     }
+
 
 
     private func color(for status: DailyStatus?) -> Color {
@@ -130,6 +138,13 @@ struct HistoryView: View {
         return (0..<totalDays).compactMap {
             calendar.date(byAdding: .day, value: $0, to: alignedStart)
         }
+    }
+    private func dayKey(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar.current
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
     }
 
 }
