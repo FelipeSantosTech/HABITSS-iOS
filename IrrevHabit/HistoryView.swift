@@ -90,13 +90,20 @@ struct HistoryView: View {
     }
 
     private func statusForDay(_ day: Date, standardID: UUID) -> DailyStatus? {
-        let targetKey = dayKey(day)
+        let calendar = Calendar.current
 
-        return store.history.first {
-            $0.standardID == standardID &&
-            dayKey($0.date) == targetKey
-        }?.status
+        for record in store.history {
+            if record.standardID == standardID &&
+               calendar.isDate(record.date, inSameDayAs: day) {
+
+                print("MATCH FOUND →", standardID, day, record.status)
+                return record.status
+            }
+        }
+
+        return nil
     }
+
 
 
 
@@ -110,35 +117,11 @@ struct HistoryView: View {
             return Color(white: 0.15)
         }
     }
-    
-    private var numberOfWeeks: Int {
-        Int(ceil(Double(daysToShow) / 7.0))
-    }
 
     private var gridDays: [Date] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-
-        let startDate = calendar.date(
-            byAdding: .day,
-            value: -(daysToShow - 1),
-            to: today
-        )!
-
-        // Align start date to beginning of week (Sunday)
-        let weekday = calendar.component(.weekday, from: startDate)
-        let alignedStart = calendar.date(
-            byAdding: .day,
-            value: -(weekday - 1),
-            to: startDate
-        )!
-
-        let totalDays = numberOfWeeks * 7
-
-        return (0..<totalDays).compactMap {
-            calendar.date(byAdding: .day, value: $0, to: alignedStart)
-        }
+        lastDays(daysToShow)
     }
+
     private func dayKey(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.calendar = Calendar.current
