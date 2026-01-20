@@ -38,7 +38,7 @@ struct SetupView: View {
                     
                 }
                 VStack(spacing: 12) {
-                    TextField("e.g. Slee. before 23:00", text: $newStandardTitle)
+                    TextField("e.g. Sleep before 23:00", text: $newStandardTitle)
                         .padding()
                         .background(Color(white: 0.1))
                         .foregroundColor(.white)

@@ -72,6 +72,14 @@ struct HistoryView: View {
                             .fill(color(for: status))
                             .frame(width: 10, height: 10)
                             .cornerRadius(2)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 2)
+                                    .stroke(
+                                        isToday(day) ? Color.white.opacity(0.5) : Color.clear,
+                                        lineWidth: 1.5
+                                    )
+                            )
+
                     }
                 }
                 .padding(.vertical, 4)
@@ -103,9 +111,10 @@ struct HistoryView: View {
 
         return nil
     }
-
-
-
+    
+    private func isToday(_ date: Date) -> Bool {
+        Calendar.current.isDateInToday(date)
+    }
 
     private func color(for status: DailyStatus?) -> Color {
         switch status {
