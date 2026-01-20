@@ -22,10 +22,8 @@ struct RulesScreen: View {
                 VStack(spacing: 24) {
 
                     VStack(spacing: 12) {
-                        Text("YOU DEFINE UP TO 5 STANDARDS")
                         Text("EVERY DAY YOU EXECUTE OR MISS")
                         Text("MISSES ARE PERMANENT")
-                        Text("STANDARDS CANNOT BE EDITED AFTER LOCK")
                         Text("CONSISTENCY COMPOUNDS")
                     }
 

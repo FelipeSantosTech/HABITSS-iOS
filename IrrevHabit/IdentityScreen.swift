@@ -22,7 +22,7 @@ struct IdentityScreen: View {
                 VStack(spacing: 24) {
 
                     VStack(spacing: 12) {
-                        Text("IRREVHABIT DOES NOT MOTIVATE YOU")
+                        Text("IRREV DOES NOT MOTIVATE YOU")
                         Text("IT RECORDS WHAT YOU ACTUALLY DO")
                         Text("MISSES ARE PERMANENT")
                     }
