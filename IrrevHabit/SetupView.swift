@@ -14,6 +14,8 @@ struct SetupView: View {
     @State private var confirmationText: String = ""
     @State private var editingStandardID: UUID? = nil
     @State private var editedTitle: String = ""
+    @State private var lockConfirmation = ""
+
 
     
     var body: some View {
@@ -41,11 +43,16 @@ struct SetupView: View {
                 .padding(.bottom, 24)
 
                 VStack(spacing: 12) {
-                    TextField("e.g. Sleep before 23:00", text: $newStandardTitle)
+                    TextField("", text: $newStandardTitle)
+                        .placeholder(when: newStandardTitle.isEmpty) {
+                            Text("e.g. Sleep before 23:00")
+                                .foregroundColor(.white.opacity(0.6))
+                        }
                         .padding()
-                        .background(Color(white: 0.1))
-                        .foregroundColor(.white)
+                        .background(Color(white: 0.15))
                         .cornerRadius(6)
+                        .foregroundColor(.white)
+
                     
                     Button("ADD STANDARD") {
                         let trimmed = newStandardTitle.trimmingCharacters(in: .whitespaces)
@@ -106,45 +113,31 @@ struct SetupView: View {
                         .font(.footnote)
                         .foregroundColor(.gray)
                     
-                    Button("LOCK STANDARDS") {
-                        showLockConfirmation = true
-                    }
-                    .disabled(!store.canLockStandards)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(store.canLockStandards ? Color.white : Color(white: 0.3))
-                    .foregroundColor(.black)
-                    .cornerRadius(6)
-                }
-                
-                if showLockConfirmation {
-                    VStack(spacing: 16) {
-                        Text("This action is irreversible.")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        
-                        Text("Type LOCK to confirm.")
-                            .font(.footnote)
-                            .foregroundColor(.gray)
-                        
-                        TextField("LOCK", text: $confirmationText)
+                    VStack(spacing: 12) {
+
+                        TextField("", text: $lockConfirmation)
+                            .placeholder(when: lockConfirmation.isEmpty) {
+                                Text("TYPE LOCK TO CONFIRM")
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
+                            .textInputAutocapitalization(.characters)
+                            .disableAutocorrection(true)
                             .padding()
-                            .background(Color(white: 0.1))
-                            .foregroundColor(.white)
+                            .background(Color(white: 0.15))
                             .cornerRadius(6)
-                            .autocapitalization(.allCharacters)
-                        
+                            .foregroundColor(.white)
+
                         Button("CONFIRM & LOCK") {
                             store.lockStandards()
                         }
-                        .disabled(confirmationText != "LOCK")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(confirmationText == "LOCK" ? Color.white : Color(white: 0.3))
+                        .disabled(lockConfirmation != "LOCK")
                         .foregroundColor(.black)
-                        .cornerRadius(6)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(lockConfirmation == "LOCK" ? Color.white : Color.gray)
                     }
-                    .padding()
+                    .padding(.top, 16)
+
                     .background(Color(white: 0.05))
                     .cornerRadius(8)
                 }
@@ -193,4 +186,18 @@ struct SetupView: View {
 #Preview {
     SetupView()
         .environmentObject(StandardsStore())
+}
+
+
+extension View {
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content
+    ) -> some View {
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
+        }
+    }
 }
