@@ -72,6 +72,7 @@ struct HistoryView: View {
                             .fill(color(for: status))
                             .frame(width: 9, height: 9)
                             .cornerRadius(2)
+                            .opacity(opacity(for: day))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 2)
                                     .stroke(
@@ -140,6 +141,18 @@ struct HistoryView: View {
     private var gridDays: [Date] {
         lastDays(daysToShow)
     }
+    
+    private func opacity(for day: Date) -> Double {
+        let calendar = Calendar.current
+        let daysAgo = calendar.dateComponents([.day], from: day, to: Date()).day ?? 0
+
+        let maxFadeDays = 180.0   // full semester
+        let normalized = min(Double(daysAgo) / maxFadeDays, 1.0)
+
+        // 1.0 (today) → 0.25 (oldest)
+        return 1.0 - (normalized * 0.75)
+    }
+
 
     private func dayKey(_ date: Date) -> String {
         let formatter = DateFormatter()
