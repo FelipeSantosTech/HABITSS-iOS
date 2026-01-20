@@ -58,33 +58,41 @@ struct HistoryView: View {
                 .fontWeight(.medium)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHGrid(
-                    rows: Array(
-                        repeating: GridItem(.fixed(10), spacing: 4),
-                        count: 7
-                    ),
-                    spacing: 4
-                ) {
-                    ForEach(gridDays, id: \.self) { day in
-                        let status = statusForDay(day, standardID: standard.id)
+                VStack(alignment: .leading, spacing: 6) {
 
-                        Rectangle()
-                            .fill(color(for: status))
-                            .frame(width: 9, height: 9)
-                            .cornerRadius(2)
-                            .opacity(opacity(for: day))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 2)
-                                    .stroke(
-                                        isToday(day) ? Color.white.opacity(0.5) : Color.clear,
-                                        lineWidth: 1.5
-                                    )
-                            )
+                    // Month labels
+                    ZStack(alignment: .leading) {
+                        ForEach(monthLabels) { label in
+                            Text(label.text.uppercased())
+                                .font(.caption2)
+                                .foregroundColor(.gray)
+                                .offset(x: CGFloat(label.weekIndex) * 14)
+                        }
+                    }
+                    .frame(height: 14)
 
+                    // Grid
+                    LazyHGrid(
+                        rows: Array(
+                            repeating: GridItem(.fixed(10), spacing: 4),
+                            count: 7
+                        ),
+                        spacing: 4
+                    ) {
+                        ForEach(gridDays, id: \.self) { day in
+                            let status = statusForDay(day, standardID: standard.id)
+
+                            Rectangle()
+                                .fill(color(for: status))
+                                .frame(width: 9, height: 9)
+                                .cornerRadius(2)
+                                .opacity(opacity(for: day))
+                        }
                     }
                 }
                 .padding(.vertical, 4)
             }
+
             .frame(height: 7 * 14)
         }
         .padding(12)
@@ -151,6 +159,37 @@ struct HistoryView: View {
 
         // 1.0 (today) → 0.25 (oldest)
         return 1.0 - (normalized * 0.75)
+    }
+    
+    private struct MonthLabel: Identifiable {
+        let id = UUID()
+        let text: String
+        let weekIndex: Int
+    }
+
+    private var monthLabels: [MonthLabel] {
+        let calendar = Calendar.current
+        var labels: [MonthLabel] = []
+        var seenMonths: Set<Int> = []
+
+        for (index, date) in gridDays.enumerated() {
+            let month = calendar.component(.month, from: date)
+            let weekIndex = index / 7
+
+            if !seenMonths.contains(month) {
+                seenMonths.insert(month)
+
+                let formatter = DateFormatter()
+                formatter.dateFormat = "MMM"
+                let text = formatter.string(from: date)
+
+                labels.append(
+                    MonthLabel(text: text, weekIndex: weekIndex)
+                )
+            }
+        }
+
+        return labels
     }
 
 
