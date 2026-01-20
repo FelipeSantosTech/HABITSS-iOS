@@ -10,40 +10,55 @@ import SwiftUI
 struct CommitmentScreen: View {
 
     let onAccept: () -> Void
-    @State private var accepted = false
+    @State private var rejected = false
 
     var body: some View {
-        VStack {
-            Spacer()
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
 
-            VStack(spacing: 24) {
-                Text("REALITY CHECK")
-                    .font(.headline)
-                    .tracking(1)
+            VStack {
+                Spacer()
 
-                Text("""
-This system only works if you tell the truth.
+                VStack(spacing: 24) {
 
-If you fake execution, you are only lying to yourself.
-""")
-                .multilineTextAlignment(.center)
-                .foregroundColor(.gray)
+                    Text("ARE YOU READY TO SEE THE TRUTH AND CHANGE YOUR REALITY?")
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
 
-                Toggle("I accept full responsibility for my actions.", isOn: $accepted)
-                    .toggleStyle(SwitchToggleStyle(tint: .white))
+                    VStack(spacing: 12) {
 
-                Button("ENTER") {
-                    onAccept()
+                        Button("YES") {
+                            onAccept()
+                        }
+                        .foregroundColor(.black)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white)
+
+                        Button("NO") {
+                            rejected = true
+                        }
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(Color.white, lineWidth: 1)
+                        )
+                    }
+
+                    if rejected {
+                        Text("THEN THIS APP IS NOT FOR YOU.")
+                            .foregroundColor(.gray)
+                            .font(.footnote)
+                            .padding(.top, 8)
+                    }
                 }
-                .disabled(!accepted)
-                .foregroundColor(.black)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(accepted ? Color.white : Color.gray)
-                .padding(.top, 12)
-            }
 
-            Spacer()
+                Spacer()
+            }
+            .padding(24)
         }
     }
 }

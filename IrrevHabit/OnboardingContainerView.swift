@@ -8,25 +8,26 @@
 import SwiftUI
 
 struct OnboardingContainerView: View {
-
+    
     @State private var step = 0
     @AppStorage("acceptedReality") private var acceptedReality = false
-
+    
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
-
+            Color.black
+                .ignoresSafeArea()
+            
             switch step {
             case 0:
                 IdentityScreen {
                     step = 1
                 }
-
+                
             case 1:
                 RulesScreen {
                     step = 2
                 }
-
+                
             default:
                 CommitmentScreen {
                     acceptedReality = true
@@ -35,7 +36,6 @@ struct OnboardingContainerView: View {
         }
         .font(.system(.body, design: .monospaced))
         .foregroundColor(.white)
-        .padding(24)
     }
 }
 

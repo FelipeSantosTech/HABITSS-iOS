@@ -12,34 +12,38 @@ struct RulesScreen: View {
     let onContinue: () -> Void
 
     var body: some View {
-        VStack {
-            Spacer()
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
 
-            VStack(alignment: .leading, spacing: 20) {
-                Text("THE RULES")
-                    .font(.headline)
-                    .tracking(1)
+            VStack {
+                Spacer()
 
-                Group {
-                    Text("• You may define up to 5 standards.")
-                    Text("• Every day you either execute or miss.")
-                    Text("• Misses are permanent and visible.")
-                    Text("• Standards cannot be edited after locking.")
-                    Text("• Consistency compounds over time.")
+                VStack(spacing: 24) {
+
+                    VStack(spacing: 12) {
+                        Text("YOU DEFINE UP TO 5 STANDARDS")
+                        Text("EVERY DAY YOU EXECUTE OR MISS")
+                        Text("MISSES ARE PERMANENT")
+                        Text("STANDARDS CANNOT BE EDITED AFTER LOCK")
+                        Text("CONSISTENCY COMPOUNDS")
+                    }
+
+                    Text("READ THIS CAREFULLY.")
+                        .font(.headline)
+
+                    Button("I UNDERSTAND") {
+                        onContinue()
+                    }
+                    .foregroundColor(.black)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white)
                 }
-                .foregroundColor(.gray)
 
-                Button("I UNDERSTAND") {
-                    onContinue()
-                }
-                .foregroundColor(.black)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.white)
-                .padding(.top, 24)
+                Spacer()
             }
-
-            Spacer()
+            .padding(24)
         }
     }
 }
