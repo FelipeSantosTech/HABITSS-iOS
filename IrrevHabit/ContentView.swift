@@ -10,7 +10,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if !acceptedReality {
-                OnboardingView()
+                OnboardingContainerView()
             } else if !store.areStandardsLocked{
                 SetupView()
             } else {
