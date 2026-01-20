@@ -70,7 +70,7 @@ struct HistoryView: View {
 
                         Rectangle()
                             .fill(color(for: status))
-                            .frame(width: 10, height: 10)
+                            .frame(width: 9, height: 9)
                             .cornerRadius(2)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 2)
@@ -86,6 +86,16 @@ struct HistoryView: View {
             }
             .frame(height: 7 * 14)
         }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.03))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                )
+        )
+
     }
 
     private func lastDays(_ count: Int) -> [Date] {
