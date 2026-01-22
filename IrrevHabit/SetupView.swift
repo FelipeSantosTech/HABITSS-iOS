@@ -66,9 +66,13 @@ struct SetupView: View {
                         || !store.canAddStandard
                     )
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color(white: 0.2))
-                    .cornerRadius(6)
+                    .foregroundColor(.white.opacity(0.9))
+                    .tracking(1)
+                    .padding(.vertical, 10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.white.opacity(0.35), lineWidth: 1)
+                    )
                     
                     if store.standards.count >= store.maxStandards {
                         Text("Maximum of 5 standards allowed.")
