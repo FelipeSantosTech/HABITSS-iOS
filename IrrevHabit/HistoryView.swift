@@ -82,11 +82,18 @@ struct HistoryView: View {
                         ForEach(gridDays, id: \.self) { day in
                             let status = statusForDay(day, standardID: standard.id)
 
-                            Rectangle()
-                                .fill(color(for: status))
-                                .frame(width: 9, height: 9)
-                                .cornerRadius(2)
-                                .opacity(opacity(for: day))
+                            ZStack {
+                                Rectangle()
+                                    .fill(color(for: status))
+                                    .opacity(opacity(for: day))
+
+                                if Calendar.current.isDateInToday(day) {
+                                    RoundedRectangle(cornerRadius: 2)
+                                        .stroke(Color.white, lineWidth: 1)
+                                }
+                            }
+                            .frame(width: 9, height: 9)
+
                         }
                     }
                 }
