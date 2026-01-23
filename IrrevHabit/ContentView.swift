@@ -6,7 +6,8 @@ import SwiftUI
 struct ContentView: View {
   @EnvironmentObject var store: StandardsStore
   @AppStorage("acceptedReality") private var acceptedReality = false
-    
+    @State private var selectedTab = 0
+
     var body: some View {
         Group {
             if !acceptedReality {
@@ -14,17 +15,19 @@ struct ContentView: View {
             } else if !store.areStandardsLocked{
                 SetupView()
             } else {
-                TabView {
-                    MainView()
-                        .tabItem {
-                            Label("Execute", systemImage: "checkmark.circle")
-                        }
+                ZStack(alignment: .bottom) {
+                    TabView(selection: $selectedTab) {
+                        MainView()
+                            .tag(0)
 
-                    HistoryView()
-                        .tabItem {
-                            Label("History", systemImage: "square.grid.3x3")
-                        }
+                        HistoryView()
+                            .tag(1)
+                    }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+
+                    BottomNavBar(selectedTab: $selectedTab)
                 }
+
 
             }
         }
