@@ -13,12 +13,12 @@ struct BottomNavBar: View {
     var body: some View {
         HStack(spacing: 48) {
             navButton(
-                icon: "checkmark.circle",
+                icon: "checklist",
                 index: 0
             )
 
             navButton(
-                icon: "square.grid.3x3",
+                icon: "square.grid.3x3.bottomright.filled",
                 index: 1
             )
         }

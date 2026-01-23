@@ -57,7 +57,6 @@ struct HistoryView: View {
                 .foregroundColor(.white)
                 .fontWeight(.medium)
 
-            ScrollView(.horizontal, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 6) {
 
                     // Month labels
@@ -97,9 +96,7 @@ struct HistoryView: View {
                         }
                     }
                 }
-                .padding(.vertical, 4)
-            }
-
+            .padding(.vertical, 4)
             .frame(height: 7 * 14)
         }
         .padding(12)
