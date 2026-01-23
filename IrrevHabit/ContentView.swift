@@ -24,8 +24,9 @@ struct ContentView: View {
                             .tag(1)
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
-
-                    BottomNavBar(selectedTab: $selectedTab)
+                    .safeAreaInset(edge: .bottom) {
+                        BottomNavBar(selectedTab: $selectedTab)
+                    }
                 }
 
 
