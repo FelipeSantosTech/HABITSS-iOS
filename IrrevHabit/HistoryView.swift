@@ -21,17 +21,11 @@ struct HistoryView: View {
                 VStack(alignment: .leading, spacing: 32) {
 
                     // HEADER
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("HISTORY")
-                            .font(.caption)
-                            .tracking(2)
-                            .foregroundColor(.gray)
+                    ScreenHeader(
+                        eyebrow: "History",
+                        title: "Consistency over time"
+                    )
 
-                        Text("Consistency over time")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                    }
 
                     // PANELS
                     ForEach(store.standards) { standard in

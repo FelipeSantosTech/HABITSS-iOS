@@ -26,23 +26,18 @@ struct SetupView: View {
             
             VStack (spacing: 32){
                 
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("DEFINE YOUR STANDARDS")
-                        .font(.caption)
-                        .tracking(2)
-                        .foregroundColor(.gray)
+                ScreenHeader(
+                    eyebrow: "Setup",
+                    title: "Define your standards",
+                    subtitle: "These are non-negotiable behaviors you commit to execute daily."
+                )
 
-                    Text("These are non-negotiable behaviors you commit to execute daily.")
-                        .font(.headline)
-                        .foregroundColor(.white)
-
-                    Text("Choose carefully. You cannot edit after locking.")
-                        .foregroundColor(.gray)
-                        .font(.footnote)
-                }
                 .padding(.bottom, 24)
 
                 VStack(spacing: 12) {
+                    Text("Choose carefully. You cannot edit after locking.")
+                        .foregroundColor(.gray)
+                        .font(.footnote)
                     TextField("", text: $newStandardTitle)
                         .placeholder(when: newStandardTitle.isEmpty) {
                             Text("e.g. Sleep before 23:00")

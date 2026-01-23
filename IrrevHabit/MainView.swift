@@ -17,17 +17,11 @@ struct MainView: View {
             
             VStack(spacing: 32){
                 //header
-                VStack(spacing: 8) {
-                    Text("EXECUTE")
-                        .font(.caption)
-                        .tracking(2)
-                        .foregroundColor(.gray)
-                    
-                    Text("Today")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                }
+                ScreenHeader(
+                    eyebrow: "Execute",
+                    title: "Today"
+                )
+
                 
                 if store.isDayComplete {
                     Text("Day complete. Come back tomorrow.")

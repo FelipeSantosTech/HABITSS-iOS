@@ -34,7 +34,6 @@ struct OnboardingContainerView: View {
                 }
             }
         }
-        .font(.system(.body, design: .monospaced))
         .foregroundColor(.white)
     }
 }
