@@ -15,7 +15,9 @@ struct ContentView: View {
             } else if !store.areStandardsLocked{
                 SetupView()
             } else {
-                ZStack(alignment: .bottom) {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+
                     TabView(selection: $selectedTab) {
                         MainView()
                             .tag(0)
@@ -24,10 +26,11 @@ struct ContentView: View {
                             .tag(1)
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
-                    .safeAreaInset(edge: .bottom) {
-                        BottomNavBar(selectedTab: $selectedTab)
-                    }
                 }
+                .safeAreaInset(edge: .bottom) {
+                    BottomNavBar(selectedTab: $selectedTab)
+                }
+
 
 
             }
