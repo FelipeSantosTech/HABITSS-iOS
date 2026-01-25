@@ -32,7 +32,7 @@ struct CommitmentScreen: View {
                             onAccept()
                         }
                         .foregroundColor(.black)
-                        .padding()
+                        .padding(.vertical, 14)
                         .frame(maxWidth: .infinity)
                         .background(Color.white)
 
@@ -40,7 +40,7 @@ struct CommitmentScreen: View {
                             rejected = true
                         }
                         .foregroundColor(.white)
-                        .padding()
+                        .padding(.vertical, 14)
                         .frame(maxWidth: .infinity)
                         .overlay(
                             RoundedRectangle(cornerRadius: 4)

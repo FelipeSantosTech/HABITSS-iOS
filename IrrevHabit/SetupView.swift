@@ -35,9 +35,6 @@ struct SetupView: View {
                 .padding(.bottom, 24)
 
                 VStack(spacing: 12) {
-                    Text("Choose carefully. You cannot edit after locking.")
-                        .foregroundColor(.gray)
-                        .font(.footnote)
                     TextField("", text: $newStandardTitle)
                         .placeholder(when: newStandardTitle.isEmpty) {
                             Text("e.g. Sleep before 23:00")
@@ -63,7 +60,7 @@ struct SetupView: View {
                     .frame(maxWidth: .infinity)
                     .foregroundColor(.white.opacity(0.9))
                     .tracking(1)
-                    .padding(.vertical, 10)
+                    .padding(.vertical, 14)
                     .overlay(
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(Color.white.opacity(0.35), lineWidth: 1)
@@ -131,7 +128,7 @@ struct SetupView: View {
                         }
                         .disabled(lockConfirmation != "LOCK")
                         .foregroundColor(.black)
-                        .padding()
+                        .padding(.vertical, 14)
                         .frame(maxWidth: .infinity)
                         .background(lockConfirmation == "LOCK" ? Color.white : Color.gray)
                     }

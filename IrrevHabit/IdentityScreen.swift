@@ -34,7 +34,7 @@ struct IdentityScreen: View {
                         onContinue()
                     }
                     .foregroundColor(.black)
-                    .padding()
+                    .padding(.vertical, 14)
                     .frame(maxWidth: .infinity)
                     .background(Color.white)
                 }
