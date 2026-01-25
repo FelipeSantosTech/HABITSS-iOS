@@ -66,7 +66,7 @@ struct MainView: View {
                     .padding()
                     .background(Color.white)
                     .foregroundColor(.black)
-                    .cornerRadius(6)
+                    .cornerRadius(8)
 
                     Button("MISSED") {
                         store.markMissed(at: index)

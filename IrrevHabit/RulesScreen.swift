@@ -37,6 +37,8 @@ struct RulesScreen: View {
                     .padding(.vertical, 14)
                     .frame(maxWidth: .infinity)
                     .background(Color.white)
+                    .cornerRadius(8)
+
                 }
 
                 Spacer()

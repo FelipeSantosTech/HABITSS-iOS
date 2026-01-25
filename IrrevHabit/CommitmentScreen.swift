@@ -35,12 +35,15 @@ struct CommitmentScreen: View {
                         .padding(.vertical, 14)
                         .frame(maxWidth: .infinity)
                         .background(Color.white)
+                        .cornerRadius(8)
 
                         Button("NO") {
                             rejected = true
                         }
                         .foregroundColor(.white)
                         .padding(.vertical, 14)
+                        .font(.footnote)
+                        .tracking(1)
                         .frame(maxWidth: .infinity)
                         .overlay(
                             RoundedRectangle(cornerRadius: 4)
