@@ -14,7 +14,7 @@ struct HistoryView: View {
     private let daysToShow = 182
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             Color.black.ignoresSafeArea()
 
             ScrollView {
@@ -32,19 +32,25 @@ struct HistoryView: View {
                         standardHistoryPanel(for: standard)
                     }
                 }
-                .padding()
+                .padding(.bottom, 56)
             }
-            .onAppear {
-                print("History count:", store.history.count)
-                for record in store.history {
-                    print("record",
-                          record.standardID,
-                          record.status,
-                          record.date)
-                }
-            }
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0.0),
+                    Color.black.opacity(1.0)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 14)
+            .allowsHitTesting(false)
         }
     }
+    
+    
+    
+    
+    
     private func standardHistoryPanel(for standard: Standard) -> some View {
         return VStack(alignment: .leading, spacing: 12) {
             Text(standard.title)

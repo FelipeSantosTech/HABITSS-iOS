@@ -22,7 +22,7 @@ struct BottomNavBar: View {
                 index: 1
             )
         }
-        .padding(.vertical, 12)
+        .padding(.vertical, 10)
         .padding(.horizontal, 32)
         .background(
             Color.black.opacity(0.9)
