@@ -15,11 +15,11 @@ struct MainView: View {
         ZStack{
             Color.black.ignoresSafeArea()
             
-            VStack(spacing: 32){
+            VStack(alignment: .leading, spacing: 32) {
                 //header
                 ScreenHeader(
                     eyebrow: "Execute",
-                    title: "Today"
+                    title: "Today's habits"
                 )
 
                 
@@ -86,8 +86,15 @@ struct MainView: View {
 
         }
         .padding()
-        .background(Color(white: 0.08))
-        .cornerRadius(8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(white: 0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+        )
+
     }
 }
 
