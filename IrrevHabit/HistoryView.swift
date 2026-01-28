@@ -11,8 +11,6 @@ import SwiftUI
 struct HistoryView: View {
     @EnvironmentObject var store: StandardsStore
 
-    private let daysToShow = 182
-
     var body: some View {
         ZStack(alignment: .bottom) {
             Color.black.ignoresSafeArea()
@@ -58,43 +56,49 @@ struct HistoryView: View {
                 .fontWeight(.medium)
 
                 VStack(alignment: .leading, spacing: 6) {
+                    let grid = CalendarGridEngine.generateGrid()
+
+                    
+                    let labels = monthLabels(from: grid)
 
                     // Month labels
                     ZStack(alignment: .leading) {
-                        ForEach(monthLabels) { label in
+                        ForEach(labels) { label in
                             Text(label.text.uppercased())
                                 .font(.caption2)
                                 .foregroundColor(.gray)
-                                .offset(x: CGFloat(label.weekIndex) * 14)
+                                .offset(x: CGFloat(label.weekIndex) * 13)
                         }
                     }
+
                     .frame(height: 14)
 
                     // Grid
-                    LazyHGrid(
-                        rows: Array(
-                            repeating: GridItem(.fixed(10), spacing: 4),
-                            count: 7
-                        ),
-                        spacing: 4
-                    ) {
-                        ForEach(gridDays, id: \.self) { day in
-                            let status = statusForDay(day, standardID: standard.id)
 
-                            ZStack {
-                                Rectangle()
-                                    .fill(color(for: status))
-                                    .opacity(opacity(for: day))
+                    VStack(spacing: 4) {
+                        ForEach(0..<7, id: \.self) { row in
+                            HStack(spacing: 4) {
+                                ForEach(0..<grid.count, id: \.self) { column in
+                                    let cell = grid[column][row]
 
-                                if Calendar.current.isDateInToday(day) {
+                                    let baseOpacity = cell.isFuture ? 0.0 : 0.15 * opacity(for: cell.date)
+
                                     RoundedRectangle(cornerRadius: 2)
-                                        .stroke(Color.white, lineWidth: 1)
+                                        .fill(Color.white.opacity(baseOpacity))
+                                        .overlay {
+                                            if cell.isToday {
+                                                RoundedRectangle(cornerRadius: 2)
+                                                    .stroke(Color.white, lineWidth: 1.5)
+                                            }
+                                        }
+                                        .frame(width: 9, height: 9)
+
+
                                 }
                             }
-                            .frame(width: 9, height: 9)
-
                         }
                     }
+
                 }
             .padding(.vertical, 4)
             .frame(height: 7 * 14)
@@ -111,14 +115,6 @@ struct HistoryView: View {
 
     }
 
-    private func lastDays(_ count: Int) -> [Date] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-
-        return (0..<count)
-            .compactMap { calendar.date(byAdding: .day, value: -$0, to: today) }
-            .reversed()
-    }
 
     private func statusForDay(_ day: Date, standardID: UUID) -> DailyStatus? {
         let calendar = Calendar.current
@@ -150,9 +146,6 @@ struct HistoryView: View {
         }
     }
 
-    private var gridDays: [Date] {
-        lastDays(daysToShow)
-    }
     
     private func opacity(for day: Date) -> Double {
         let calendar = Calendar.current
@@ -171,30 +164,34 @@ struct HistoryView: View {
         let weekIndex: Int
     }
 
-    private var monthLabels: [MonthLabel] {
+    private func monthLabels(from grid: [[CalendarGridEngine.DayCell]]) -> [MonthLabel] {
         let calendar = Calendar.current
         var labels: [MonthLabel] = []
-        var seenMonths: Set<Int> = []
+        var lastMonth: Int?
 
-        for (index, date) in gridDays.enumerated() {
-            let month = calendar.component(.month, from: date)
-            let weekIndex = index / 7
+        for (columnIndex, column) in grid.enumerated() {
+            guard let firstDay = column.first else { continue }
 
-            if !seenMonths.contains(month) {
-                seenMonths.insert(month)
+            let month = calendar.component(.month, from: firstDay.date)
+
+            if month != lastMonth {
+                lastMonth = month
 
                 let formatter = DateFormatter()
                 formatter.dateFormat = "MMM"
-                let text = formatter.string(from: date)
 
                 labels.append(
-                    MonthLabel(text: text, weekIndex: weekIndex)
+                    MonthLabel(
+                        text: formatter.string(from: firstDay.date),
+                        weekIndex: columnIndex
+                    )
                 )
             }
         }
 
         return labels
     }
+
 
 
     private func dayKey(_ date: Date) -> String {
