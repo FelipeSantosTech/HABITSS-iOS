@@ -11,11 +11,13 @@ import SwiftUI
 struct IrrevHabitApp: App {
     
     @StateObject private var store = StandardsStore()
-    
+    @StateObject private var proManager = ProManager()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(store)
+                .environmentObject(proManager)
         }
     }
 }
