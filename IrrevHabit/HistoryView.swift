@@ -9,6 +9,10 @@
 import SwiftUI
 
 struct HistoryView: View {
+    
+    private let weekdayColumnWidth: CGFloat = 26
+    private let columnStride: CGFloat = 13 // square + spacing
+    
     @EnvironmentObject var store: StandardsStore
 
     var body: some View {
@@ -57,60 +61,86 @@ struct HistoryView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     let grid = CalendarGridEngine.generateGrid()
-
-                    
                     let labels = monthLabels(from: grid)
 
                     // Month labels
-                    ZStack(alignment: .leading) {
-                        ForEach(labels) { label in
-                            Text(label.text.uppercased())
-                                .font(.caption2)
-                                .foregroundColor(.gray)
-                                .offset(x: CGFloat(label.weekIndex) * 13)
-                        }
-                    }
+                    let gridWidth = CGFloat(grid.count) * columnStride
 
+                    HStack(spacing: 4) {
+
+                        // Weekday placeholder (matches grid layout exactly)
+                        Text("MON")
+                            .font(.system(size: 9, weight: .medium, design: .monospaced))
+                            .tracking(0.5)
+                            .opacity(0)
+                            .frame(width: weekdayColumnWidth, alignment: .leading)
+
+                        // Month labels aligned to grid width
+                        ZStack(alignment: .leading) {
+                            ForEach(labels) { label in
+                                Text(label.text.uppercased())
+                                    .font(.caption2)
+                                    .foregroundColor(.gray.opacity(0.9))
+                                    .offset(x: CGFloat(label.weekIndex) * columnStride)
+                            }
+                        }
+                        .frame(width: gridWidth, alignment: .leading)   // ⭐ THIS FIXES EVERYTHING
+                    }
                     .frame(height: 14)
+                    .clipped()
+
 
                     // Grid
 
-                    VStack(spacing: 4) {
+                    VStack(spacing: 2) {
                         ForEach(0..<7, id: \.self) { row in
+
                             HStack(spacing: 4) {
-                                ForEach(0..<grid.count, id: \.self) { column in
-                                    let cell = grid[column][row]
 
-                                    let status = statusForDay(cell.date, standardID: standard.id)
+                                // Weekday label column
+                                Text(weekdayLabel(for: row)?.uppercased() ?? "MON")
+                                    .font(.system(size: 9, weight: .medium, design: .monospaced))
+                                    .tracking(0.5)
+                                    .foregroundColor(.gray.opacity(0.75))
+                                    .opacity(weekdayLabel(for: row) == nil ? 0 : 1)
+                                    .frame(width: 26, alignment: .leading)
 
-                                    let baseOpacity = cell.isFuture ? 0.0 : 0.15 * opacity(for: cell.date)
 
-                                    let fillColor: Color = {
-                                        if cell.isFuture { return .clear }
+                                // Grid squares
+                                HStack(spacing: 4) {
+                                    ForEach(0..<grid.count, id: \.self) { column in
 
-                                        switch status {
-                                        case .done:
-                                            return Color(red: 0.25, green: 0.65, blue: 0.45) // premium muted green
+                                        let cell = grid[column][row]
+                                        let status = statusForDay(cell.date, standardID: standard.id)
 
-                                        case .missed:
-                                            return Color(red: 0.65, green: 0.28, blue: 0.30) // muted deep red
+                                        let baseOpacity = cell.isFuture ? 0.0 : 0.15 * opacity(for: cell.date)
 
-                                        default:
-                                            return Color.white.opacity(baseOpacity) // timeline fade
-                                        }
-                                    }()
+                                        let fillColor: Color = {
+                                            if cell.isFuture { return .clear }
 
-                                    RoundedRectangle(cornerRadius: 2)
-                                        .fill(fillColor)
-                                        .overlay {
-                                            if cell.isToday {
-                                                RoundedRectangle(cornerRadius: 2)
-                                                    .stroke(Color.white.opacity(0.75), lineWidth: 1.2)
+                                            switch status {
+                                            case .done:
+                                                return Color(red: 0.15, green: 0.95, blue: 0.55)
+
+                                            case .missed:
+                                                return Color(red: 0.95, green: 0.25, blue: 0.35)
+
+                                            default:
+                                                return Color.white.opacity(baseOpacity)
                                             }
-                                        }
-                                        .frame(width: 9, height: 9)
+                                        }()
 
-
+                                        RoundedRectangle(cornerRadius: 2)
+                                            .fill(fillColor)
+                                            .overlay {
+                                                if cell.isToday {
+                                                    RoundedRectangle(cornerRadius: 2)
+                                                        .stroke(Color.white.opacity(0.45), lineWidth: 0.8)
+                                                        .shadow(color: Color.white.opacity(0.18), radius: 1.8)
+                                                }
+                                            }
+                                            .frame(width: 9, height: 9)
+                                    }
                                 }
                             }
                         }
@@ -184,22 +214,20 @@ struct HistoryView: View {
     private func monthLabels(from grid: [[CalendarGridEngine.DayCell]]) -> [MonthLabel] {
         let calendar = Calendar.current
         var labels: [MonthLabel] = []
-        var lastMonth: Int?
 
         for (columnIndex, column) in grid.enumerated() {
-            guard let firstDay = column.first else { continue }
 
-            let month = calendar.component(.month, from: firstDay.date)
-
-            if month != lastMonth {
-                lastMonth = month
+            // Find if this column contains the 1st day of any month
+            if let firstOfMonthCell = column.first(where: {
+                calendar.component(.day, from: $0.date) == 1
+            }) {
 
                 let formatter = DateFormatter()
                 formatter.dateFormat = "MMM"
 
                 labels.append(
                     MonthLabel(
-                        text: formatter.string(from: firstDay.date),
+                        text: formatter.string(from: firstOfMonthCell.date),
                         weekIndex: columnIndex
                     )
                 )
@@ -217,6 +245,15 @@ struct HistoryView: View {
         formatter.timeZone = TimeZone.current
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: date)
+    }
+
+    private func weekdayLabel(for row: Int) -> String? {
+        switch row {
+        case 0: return "Mon"
+        case 2: return "Wed"
+        case 4: return "Fri"
+        default: return nil
+        }
     }
 
 }
