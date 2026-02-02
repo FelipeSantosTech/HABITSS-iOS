@@ -21,6 +21,10 @@ struct BottomNavBar: View {
                 icon: "square.grid.3x3.bottomright.filled",
                 index: 1
             )
+            
+            navButton(
+                icon: "star.fill",
+                index: 2)
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 32)

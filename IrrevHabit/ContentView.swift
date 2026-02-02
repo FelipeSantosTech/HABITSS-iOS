@@ -24,6 +24,9 @@ struct ContentView: View {
 
                         HistoryView()
                             .tag(1)
+                        
+                        ProTabView()
+                            .tag(2)
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
                 }
