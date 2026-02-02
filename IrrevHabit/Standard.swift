@@ -14,8 +14,22 @@ enum DailyStatus: String, Codable {
     case missed
 }
 
+enum HabitType: String, Codable {
+    case superHabit
+    case temporary
+}
+
 struct Standard: Identifiable, Codable {
     let id: UUID
     var title: String
     var status: DailyStatus
+    var type: HabitType = .superHabit
+
+    var isSuper: Bool {
+        type == .superHabit
+    }
+
+    var isTemporary: Bool {
+        type == .temporary
+    }
 }
