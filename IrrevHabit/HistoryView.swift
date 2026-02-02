@@ -81,14 +81,31 @@ struct HistoryView: View {
                                 ForEach(0..<grid.count, id: \.self) { column in
                                     let cell = grid[column][row]
 
+                                    let status = statusForDay(cell.date, standardID: standard.id)
+
                                     let baseOpacity = cell.isFuture ? 0.0 : 0.15 * opacity(for: cell.date)
 
+                                    let fillColor: Color = {
+                                        if cell.isFuture { return .clear }
+
+                                        switch status {
+                                        case .done:
+                                            return Color(red: 0.25, green: 0.65, blue: 0.45) // premium muted green
+
+                                        case .missed:
+                                            return Color(red: 0.65, green: 0.28, blue: 0.30) // muted deep red
+
+                                        default:
+                                            return Color.white.opacity(baseOpacity) // timeline fade
+                                        }
+                                    }()
+
                                     RoundedRectangle(cornerRadius: 2)
-                                        .fill(Color.white.opacity(baseOpacity))
+                                        .fill(fillColor)
                                         .overlay {
                                             if cell.isToday {
                                                 RoundedRectangle(cornerRadius: 2)
-                                                    .stroke(Color.white, lineWidth: 1.5)
+                                                    .stroke(Color.white.opacity(0.75), lineWidth: 1.2)
                                             }
                                         }
                                         .frame(width: 9, height: 9)
