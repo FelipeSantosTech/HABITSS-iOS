@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct SetupView: View {
+    @EnvironmentObject var proManager: ProManager
+    @State private var showPaywall = false
+    @State private var showSuperHabitWarning = false
+    @State private var selectedStandard: Standard?
+    
     @EnvironmentObject var store: StandardsStore
     @State private var newStandardTitle: String = ""
     @State private var showLockConfirmation: Bool = false
@@ -74,31 +79,37 @@ struct SetupView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 12) {
-                    
                     ForEach(store.standards) { standard in
-                        VStack {
-                            if editingStandardID == standard.id {
-                                TextField("Edit standard", text: $editedTitle)
-                                    .padding()
-                                    .background(Color(white: 0.1))
-                                    .foregroundColor(.white)
-                                    .cornerRadius(6)
-                                    .onSubmit {
-                                        saveEdit(for: standard)
-                                    }
-                            } else {
-                                Text(standard.title)
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(Color(white: 0.08))
-                                    .cornerRadius(6)
-                                    .onTapGesture {
-                                        beginEditing(standard)
-                                    }
+                        ZStack(alignment: .topTrailing) {
+                            VStack {
+                                if editingStandardID == standard.id {
+                                    TextField("Edit standard", text: $editedTitle)
+                                        .padding()
+                                        .background(Color(white: 0.1))
+                                        .foregroundColor(.white)
+                                        .cornerRadius(6)
+                                        .onSubmit {
+                                            saveEdit(for: standard)
+                                        }
+                                } else {
+                                    Text(standard.title)
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(Color(white: 0.08))
+                                        .cornerRadius(6)
+                                        .onTapGesture {
+                                            beginEditing(standard)
+                                        }
+                                }
                             }
-                        }
+                            
+                            standards(for: standard)
+
+                            starButton(for: standard)
+                                .padding(8)
                     }
+                }
                     
                 }
                 
@@ -140,6 +151,40 @@ struct SetupView: View {
                 
                 
             }
+            .sheet(isPresented: $showPaywall) {
+                VStack(spacing: 20) {
+                    Text("HABITSS Pro")
+                        .font(.title)
+
+                    Text("Unlock habit flexibility and advanced control.")
+
+                    Button("Close") {
+                        showPaywall = false
+                    }
+                    
+                }
+                
+                .padding()
+                .background(Color.black)
+                .foregroundColor(.white)
+            }
+            .confirmationDialog(
+                "Change Habit Type?",
+                isPresented: $showSuperHabitWarning,
+                titleVisibility: .visible
+            ) {
+
+                Button("Make Temporary Habit") {
+                    // Next step we’ll mutate type here
+                }
+
+                Button("Cancel", role: .cancel) {}
+            } message: {
+
+                Text("Temporary habits can be edited and replaced, but their history resets.")
+            }
+
+
         }
             .padding()
         }
@@ -177,13 +222,34 @@ struct SetupView: View {
         editingStandardID = nil
     }
 
-}
+    private func handleStarTap(_ standard: Standard) {
 
-#Preview {
-    SetupView()
-        .environmentObject(StandardsStore())
-}
+        selectedStandard = standard
 
+        if !proManager.isProUser {
+            showPaywall = true
+        } else {
+            showSuperHabitWarning = true
+        }
+    }
+    
+    private func starButton(for standard: Standard) -> some View {
+        Button {
+            handleStarTap(standard)
+        } label: {
+            Image(systemName: standard.isSuper ? "star.fill" : "star")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(standard.isSuper ? .yellow : .gray.opacity(0.6))
+                .padding(6)
+                .background(
+                    Circle()
+                        .fill(Color.black.opacity(0.4))
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+}
 
 extension View {
     func placeholder<Content: View>(
