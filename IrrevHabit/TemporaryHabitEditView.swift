@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct TemporaryHabitEditView: View {
+    @State private var showMakeSuperWarning = false
     @State private var showResetWarning = false
     @EnvironmentObject var store: StandardsStore
     @Environment(\.dismiss) private var dismiss
@@ -57,6 +58,36 @@ struct TemporaryHabitEditView: View {
                 .cornerRadius(8)
 
                 Spacer()
+                
+                Button {
+                    showMakeSuperWarning = true
+                } label: {
+                    Text("Make Super Habit")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.gray.opacity(0.15))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .confirmationDialog(
+                    "Convert to Super Habit?",
+                    isPresented: $showMakeSuperWarning,
+                    titleVisibility: .visible
+                ) {
+
+                    Button("Convert & Lock", role: .destructive) {
+                        convertToSuperHabit()
+                    }
+
+                    Button("Cancel", role: .cancel) { }
+
+                } message: {
+                    Text("Super Habits cannot be edited individually. You can only remove them via full system reset.")
+                }
+
+                .padding(.top, 8)
+
             }
             .padding()
         }
@@ -84,6 +115,23 @@ struct TemporaryHabitEditView: View {
 
         // ✅ Remove ALL history for this habit
         store.history.removeAll { $0.standardID == habit.id }
+
+        dismiss()
+    }
+
+    private func convertToSuperHabit() {
+
+        guard let index = store.standards.firstIndex(where: { $0.id == habit.id }) else {
+            dismiss()
+            return
+        }
+
+        var updated = store.standards[index]
+
+        // Convert type
+        updated.type = .superHabit
+
+        store.standards[index] = updated
 
         dismiss()
     }
