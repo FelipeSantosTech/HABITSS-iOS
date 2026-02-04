@@ -72,15 +72,21 @@ struct TemporaryHabitEditView: View {
             return
         }
 
-        // Update habit title
         var updated = store.standards[index]
+
+        // Update title
         updated.title = title
+
+        // ✅ CRITICAL — Reset TODAY status
+        updated.status = .pending
+
         store.standards[index] = updated
 
-        // 🔥 CRITICAL — Remove ALL history for this habit
+        // ✅ Remove ALL history for this habit
         store.history.removeAll { $0.standardID == habit.id }
 
         dismiss()
     }
+
 
 }
