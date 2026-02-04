@@ -21,10 +21,19 @@ struct TemporaryHabitEditView: View {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 24) {
+                
+                VStack(spacing: 8) {
+                    Text("Edit Habit")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
 
-                Text("Edit Temporary Habit")
-                    .font(.headline)
-                    .foregroundColor(.white)
+                    Text("Temporary habits can be modified.")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                }
+                .padding(.bottom, 16)
+
 
                 TextField("Habit title", text: $title)
                     .padding()
@@ -57,19 +66,45 @@ struct TemporaryHabitEditView: View {
                 .foregroundColor(.black)
                 .cornerRadius(8)
 
+                VStack(alignment: .leading, spacing: 6) {
+                    Divider()
+                        .background(Color.white.opacity(0.2))
+                        .padding(.vertical, 8)
+
+                    Text("Temporary habits")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+
+                    Text("• Can be edited\n• Editing resets history")
+                        .font(.caption)
+                        .foregroundColor(.gray.opacity(0.9))
+                }
+                .padding(.horizontal, 4)
+
                 Spacer()
                 
                 Button {
                     showMakeSuperWarning = true
                 } label: {
-                    Text("Make Super Habit")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.gray.opacity(0.15))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                    VStack(spacing: 4) {
+                        Text("Make Super Habit")
+                            .font(.headline)
+                            .foregroundColor(.white)
+
+                        Text("Lock this habit permanently")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.white.opacity(0.05))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .cornerRadius(10)
                 }
+                .padding(.top, 20)
                 .confirmationDialog(
                     "Convert to Super Habit?",
                     isPresented: $showMakeSuperWarning,
