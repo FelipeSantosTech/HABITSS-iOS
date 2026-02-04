@@ -104,8 +104,6 @@ struct SetupView: View {
                                 }
                             }
                             
-                            standards(for: standard)
-
                             starButton(for: standard)
                                 .padding(8)
                     }
@@ -169,20 +167,22 @@ struct SetupView: View {
                 .foregroundColor(.white)
             }
             .confirmationDialog(
-                "Change Habit Type?",
+                "Change Habit Type",
                 isPresented: $showSuperHabitWarning,
                 titleVisibility: .visible
             ) {
 
                 Button("Make Temporary Habit") {
-                    // Next step we’ll mutate type here
+                    convertSelectedHabitToTemporary()
                 }
 
-                Button("Cancel", role: .cancel) {}
+                Button("Cancel", role: .cancel) { }
+
             } message: {
 
-                Text("Temporary habits can be edited and replaced, but their history resets.")
+                Text("Temporary habits can be edited and replaced. Their history will reset when edited.")
             }
+
 
 
         }
@@ -226,12 +226,23 @@ struct SetupView: View {
 
         selectedStandard = standard
 
-        if !proManager.isProUser {
-            showPaywall = true
+        // If user tries to REMOVE super status → Pro gate
+        if standard.isSuper {
+
+            if !proManager.isProUser {
+                showPaywall = true
+            } else {
+                showSuperHabitWarning = true
+            }
+
         } else {
-            showSuperHabitWarning = true
+
+            // Temporary → Super (allowed always)
+            convertSelectedHabitToSuper()
+
         }
     }
+
     
     private func starButton(for standard: Standard) -> some View {
         Button {
@@ -239,14 +250,38 @@ struct SetupView: View {
         } label: {
             Image(systemName: standard.isSuper ? "star.fill" : "star")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(standard.isSuper ? .yellow : .gray.opacity(0.6))
+                .foregroundColor(
+                    standard.isSuper
+                    ? Color.white.opacity(0.9)
+                    : Color.white.opacity(0.25)
+                )
                 .padding(6)
                 .background(
                     Circle()
-                        .fill(Color.black.opacity(0.4))
+                        .fill(Color.white.opacity(0.05))
                 )
         }
         .buttonStyle(.plain)
+    }
+    
+    private func convertSelectedHabitToTemporary() {
+        guard let selected = selectedStandard else { return }
+
+        if let index = store.standards.firstIndex(where: { $0.id == selected.id }) {
+            var updated = store.standards[index]
+            updated.type = .temporary
+            store.standards[index] = updated
+        }
+    }
+
+    private func convertSelectedHabitToSuper() {
+        guard let selected = selectedStandard else { return }
+
+        if let index = store.standards.firstIndex(where: { $0.id == selected.id }) {
+            var updated = store.standards[index]
+            updated.type = .superHabit
+            store.standards[index] = updated
+        }
     }
 
 }
