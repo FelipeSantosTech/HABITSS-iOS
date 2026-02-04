@@ -8,7 +8,9 @@
 import SwiftUI
 struct MainView: View {
     @EnvironmentObject var store: StandardsStore
-    
+    @State private var editingTemporaryHabit: Standard?
+    @State private var showTemporaryEditSheet = false
+
     var body: some View {
         
         
@@ -39,6 +41,12 @@ struct MainView: View {
             }
             .padding()
         }
+        .sheet(isPresented: $showTemporaryEditSheet) {
+            if let habit = editingTemporaryHabit {
+                TemporaryHabitEditView(habit: habit)
+                    .environmentObject(store)
+            }
+        }
         .onAppear {
             store.resetForNewDayIfNeeded()
         }
@@ -48,9 +56,15 @@ struct MainView: View {
         let standard = store.standards[index]
         
         VStack(spacing: 16) {
+            
+        HStack {
             Text(standard.title)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
+
+                   habitTypeIcon(for: standard)
+               }
             
             if store.isDayComplete {
                 Text(standard.status == .done ? "COMPLETED" : "MISSED")
@@ -96,6 +110,37 @@ struct MainView: View {
         )
 
     }
+    
+    @ViewBuilder
+    private func habitTypeIcon(for standard: Standard) -> some View {
+
+        if standard.isSuper {
+
+            Image(systemName: "lock.fill")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(.white.opacity(0.85))
+
+        } else {
+
+            Button {
+                handleTemporaryEditTap(standard)
+            } label: {
+                Image(systemName: "pencil")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.7))
+            }
+            .buttonStyle(.plain)
+
+        }
+    }
+
+    
+    private func handleTemporaryEditTap(_ standard: Standard) {
+        editingTemporaryHabit = standard
+        showTemporaryEditSheet = true
+    }
+
+
 }
 
 #Preview {
