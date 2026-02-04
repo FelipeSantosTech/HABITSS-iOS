@@ -17,56 +17,28 @@ struct TemporaryHabitEditView: View {
     @State private var title: String = ""
 
     var body: some View {
+
         ZStack {
+
+            // ===== BACKGROUND =====
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 24) {
-                
-                VStack(spacing: 8) {
-                    Text("Edit Habit")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
+            // ===== MAIN CONTENT =====
+            VStack(spacing: 16) {
 
-                    Text("Temporary habits can be modified.")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                }
-                .padding(.bottom, 16)
-
-
-                TextField("Habit title", text: $title)
-                    .padding()
-                    .background(Color(white: 0.15))
+                Text("Edit Habit")
+                    .font(.title3)
+                    .fontWeight(.semibold)
                     .foregroundColor(.white)
-                    .cornerRadius(6)
 
-                Button("Save Changes") {
-                    showResetWarning = true
-                }
-                .confirmationDialog(
-                    "Editing will reset this habit's history",
-                    isPresented: $showResetWarning,
-                    titleVisibility: .visible
-                ) {
+                TextField("Habit Name", text: $title)
+                    .padding()
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(10)
+                    .foregroundColor(.white)
 
-                    Button("Save & Reset History", role: .destructive) {
-                        saveChangesAndResetHistory()
-                    }
+                VStack(alignment: .leading, spacing: 4) {
 
-                    Button("Cancel", role: .cancel) { }
-
-                } message: {
-                    Text("Temporary habits lose historical continuity when edited.")
-                }
-
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.white)
-                .foregroundColor(.black)
-                .cornerRadius(8)
-
-                VStack(alignment: .leading, spacing: 6) {
                     Divider()
                         .background(Color.white.opacity(0.2))
                         .padding(.vertical, 8)
@@ -79,57 +51,179 @@ struct TemporaryHabitEditView: View {
                         .font(.caption)
                         .foregroundColor(.gray.opacity(0.9))
                 }
-                .padding(.horizontal, 4)
 
                 Spacer()
-                
-                Button {
-                    showMakeSuperWarning = true
-                } label: {
-                    VStack(spacing: 4) {
-                        Text("Make Super Habit")
-                            .font(.headline)
-                            .foregroundColor(.white)
-
-                        Text("Lock this habit permanently")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.white.opacity(0.05))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                    )
-                    .cornerRadius(10)
-                }
-                .padding(.top, 20)
-                .confirmationDialog(
-                    "Convert to Super Habit?",
-                    isPresented: $showMakeSuperWarning,
-                    titleVisibility: .visible
-                ) {
-
-                    Button("Convert & Lock", role: .destructive) {
-                        convertToSuperHabit()
-                    }
-
-                    Button("Cancel", role: .cancel) { }
-
-                } message: {
-                    Text("Super Habits cannot be edited individually. You can only remove them via full system reset.")
-                }
-
-                .padding(.top, 8)
-
             }
             .padding()
+
+            // ===== FIXED BOTTOM ACTION BAR =====
+            VStack {
+                Spacer()
+
+                bottomActionBar
+            }
+
+            // ===== OVERLAY LAYER =====
+            if showResetWarning || showMakeSuperWarning {
+
+                overlayDimLayer
+
+                confirmationCardLayer
+            }
         }
-        .onAppear {
-            title = habit.title
+        .animation(.easeInOut(duration: 0.2), value: showResetWarning)
+        .animation(.easeInOut(duration: 0.2), value: showMakeSuperWarning)
+
+    }
+
+    private var bottomActionBar: some View {
+
+        VStack(spacing: 12) {
+
+            Button {
+                showResetWarning = true
+            } label: {
+                Text("Save Changes")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.white)
+                    .foregroundColor(.black)
+                    .cornerRadius(10)
+            }
+
+            Button {
+                showMakeSuperWarning = true
+            } label: {
+                VStack(spacing: 4) {
+                    Text("Make Super Habit")
+                        .font(.headline)
+                        .foregroundColor(.white)
+
+                    Text("Lock this habit permanently")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.white.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.white.opacity(0.2))
+                )
+                .cornerRadius(10)
+            }
+
+            Button {
+                dismiss()
+            } label: {
+                Text("Close")
+                    .foregroundColor(.gray)
+                    .padding(.vertical, 8)
+            }
+        }
+        .padding()
+        .background(Color.black.opacity(0.95))
+    }
+
+    private var overlayDimLayer: some View {
+
+        Color.black.opacity(0.7)
+            .ignoresSafeArea()
+            .transition(.opacity)
+    }
+
+    private var confirmationCardLayer: some View {
+
+        VStack {
+
+            Spacer()
+
+            VStack(spacing: 20) {
+
+                Text(cardTitle)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+
+                Text(cardMessage)
+                    .font(.footnote)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+
+                VStack(spacing: 12) {
+
+                    Button {
+                        confirmPrimaryAction()
+                    } label: {
+                        Text(cardPrimaryText)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.white)
+                            .foregroundColor(.black)
+                            .cornerRadius(10)
+                    }
+
+                    Button {
+                        cancelCard()
+                    } label: {
+                        Text("Cancel")
+                            .foregroundColor(.gray)
+                            .padding(.vertical, 6)
+                    }
+                }
+            }
+            .padding(24)
+            .background(Color.black)
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(Color.white.opacity(0.15))
+            )
+            .cornerRadius(18)
+            .padding(32)
+
+            Spacer()
+        }
+        .transition(.opacity)
+    }
+
+    private var cardTitle: String {
+        showResetWarning
+        ? "Reset History?"
+        : "Convert to Super Habit?"
+    }
+
+    private var cardMessage: String {
+        showResetWarning
+        ? "Editing temporary habits resets their history."
+        : "Super habits cannot be edited individually. They can only be removed via a full system reset."
+    }
+
+    private var cardPrimaryText: String {
+        showResetWarning
+        ? "Save & Reset"
+        : "Convert & Lock"
+    }
+
+    private func confirmPrimaryAction() {
+
+        if showResetWarning {
+            showResetWarning = false
+            saveChangesAndResetHistory()
+        }
+
+        if showMakeSuperWarning {
+            showMakeSuperWarning = false
+            convertToSuperHabit()
         }
     }
+
+    private func cancelCard() {
+        showResetWarning = false
+        showMakeSuperWarning = false
+    }
+
 
     private func saveChangesAndResetHistory() {
 
