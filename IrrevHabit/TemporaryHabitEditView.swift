@@ -31,11 +31,22 @@ struct TemporaryHabitEditView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
 
-                TextField("Habit Name", text: $title)
-                    .padding()
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(10)
-                    .foregroundColor(.white)
+                ZStack(alignment: .leading) {
+
+                    if title.isEmpty {
+                        Text("New Habit Name")
+                            .foregroundColor(.white.opacity(0.35))
+                            .padding(.horizontal, 16)
+                    }
+
+                    TextField("", text: $title)
+                        .foregroundColor(.white)
+                        .padding()
+                        .tint(.white)
+                }
+                .background(Color.white.opacity(0.08))
+                .cornerRadius(10)
+
 
                 VStack(alignment: .leading, spacing: 4) {
 
