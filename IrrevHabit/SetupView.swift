@@ -166,27 +166,69 @@ struct SetupView: View {
                 .background(Color.black)
                 .foregroundColor(.white)
             }
-            .confirmationDialog(
-                "Change Habit Type",
-                isPresented: $showSuperHabitWarning,
-                titleVisibility: .visible
-            ) {
-
-                Button("Make Temporary Habit") {
-                    convertSelectedHabitToTemporary()
-                }
-
-                Button("Cancel", role: .cancel) { }
-
-            } message: {
-
-                Text("Temporary habits can be edited and replaced. Their history will reset when edited.")
-            }
-
 
 
         }
             .padding()
+            
+            if showSuperHabitWarning {
+
+                // Dim background
+                Color.black.opacity(0.7)
+                    .ignoresSafeArea()
+
+                VStack {
+                    Spacer()
+
+                    VStack(spacing: 20) {
+
+                        Text("Convert to Temporary Habit?")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+
+                        Text("Temporary habits can be edited. Editing will reset their history.")
+                            .font(.footnote)
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+
+                        VStack(spacing: 12) {
+
+                            Button {
+                                showSuperHabitWarning = false
+                                convertSelectedHabitToTemporary()
+                            } label: {
+                                Text("Convert")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.white)
+                                    .foregroundColor(.black)
+                                    .cornerRadius(10)
+                            }
+
+                            Button {
+                                showSuperHabitWarning = false
+                            } label: {
+                                Text("Cancel")
+                                    .foregroundColor(.gray)
+                                    .padding(.vertical, 6)
+                            }
+                        }
+                    }
+                    .padding(24)
+                    .background(Color.black)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(Color.white.opacity(0.15))
+                    )
+                    .cornerRadius(18)
+                    .padding(32)
+
+                    Spacer()
+                }
+            }
+
         }
     }
     private func addStandard () {
