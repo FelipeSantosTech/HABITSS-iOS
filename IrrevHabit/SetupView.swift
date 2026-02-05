@@ -113,39 +113,6 @@ struct SetupView: View {
                 
                 .padding(.bottom, 40)
                 //Lock section
-                VStack(spacing: 12) {
-                    Text("Once locked, standards cannot be changed.")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                    
-                    VStack(spacing: 12) {
-
-                        TextField("", text: $lockConfirmation)
-                            .placeholder(when: lockConfirmation.isEmpty) {
-                                Text("TYPE LOCK TO CONFIRM")
-                                    .foregroundColor(.white.opacity(0.6))
-                            }
-                            .textInputAutocapitalization(.characters)
-                            .disableAutocorrection(true)
-                            .padding()
-                            .background(Color(white: 0.15))
-                            .cornerRadius(6)
-                            .foregroundColor(.white)
-
-                        Button("CONFIRM & LOCK") {
-                            store.lockStandards()
-                        }
-                        .disabled(lockConfirmation != "LOCK")
-                        .foregroundColor(.black)
-                        .padding(.vertical, 14)
-                        .frame(maxWidth: .infinity)
-                        .background(lockConfirmation == "LOCK" ? Color.white : Color.gray)
-                    }
-                    .padding(.top, 16)
-
-                    .background(Color(white: 0.05))
-                    .cornerRadius(8)
-                }
                 
                 
             }
@@ -228,7 +195,9 @@ struct SetupView: View {
                     Spacer()
                 }
             }
-
+        }
+        .safeAreaInset(edge: .bottom) {
+            lockBar
         }
     }
     private func addStandard () {
@@ -262,6 +231,47 @@ struct SetupView: View {
 
         store.standards[index].title = trimmed
         editingStandardID = nil
+    }
+
+    private var lockBar: some View {
+        VStack(spacing: 12) {
+
+            Text("Once locked, standards cannot be changed.")
+                .font(.footnote)
+                .foregroundColor(.gray)
+
+            TextField("", text: $lockConfirmation)
+                .placeholder(when: lockConfirmation.isEmpty) {
+                    Text("TYPE LOCK TO CONFIRM")
+                        .foregroundColor(.white.opacity(0.6))
+                }
+                .textInputAutocapitalization(.characters)
+                .disableAutocorrection(true)
+                .padding()
+                .background(Color(white: 0.15))
+                .cornerRadius(6)
+                .foregroundColor(.white)
+
+            Button("CONFIRM & LOCK") {
+                store.lockStandards()
+            }
+            .disabled(lockConfirmation != "LOCK")
+            .foregroundColor(.black)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity)
+            .background(lockConfirmation == "LOCK" ? Color.white : Color.gray)
+            .cornerRadius(8)
+        }
+        .padding()
+        .background(
+            Color.black
+                .overlay(
+                    Rectangle()
+                        .frame(height: 1)
+                        .foregroundColor(Color.white.opacity(0.1)),
+                    alignment: .top
+                )
+        )
     }
 
     private func handleStarTap(_ standard: Standard) {
