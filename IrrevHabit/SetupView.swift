@@ -234,7 +234,7 @@ struct SetupView: View {
     }
 
     private var lockBar: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 6) {
 
             Text("Once locked, standards cannot be changed.")
                 .font(.footnote)
@@ -262,16 +262,31 @@ struct SetupView: View {
             .background(lockConfirmation == "LOCK" ? Color.white : Color.gray)
             .cornerRadius(8)
         }
-        .padding()
+        .padding(.horizontal, 16)
+        .padding(.top, 4)      // 👈 KEY
+        .padding(.bottom, 6)
         .background(
-            Color.black
-                .overlay(
-                    Rectangle()
-                        .frame(height: 1)
-                        .foregroundColor(Color.white.opacity(0.1)),
-                    alignment: .top
+            ZStack(alignment: .top) {
+
+                // Solid bar background
+                Color.black
+
+                // Stronger + taller fade ABOVE bar
+                LinearGradient(
+                    colors: [
+                        Color.black.opacity(0),
+                        Color.black.opacity(0.4),
+                        Color.black.opacity(0.85),
+                        Color.black
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
+                .frame(height: 80) // <-- KEY CHANGE (was 40ish)
+                .offset(y: -80)    // <-- Pulls fade into content area
+            }
         )
+
     }
 
     private func handleStarTap(_ standard: Standard) {
