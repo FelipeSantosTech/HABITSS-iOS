@@ -117,21 +117,7 @@ struct SetupView: View {
                 
             }
             .sheet(isPresented: $showPaywall) {
-                VStack(spacing: 20) {
-                    Text("HABITSS Pro")
-                        .font(.title)
-
-                    Text("Unlock habit flexibility and advanced control.")
-
-                    Button("Close") {
-                        showPaywall = false
-                    }
-                    
-                }
-                
-                .padding()
-                .background(Color.black)
-                .foregroundColor(.white)
+                PaywallTimelineView()
             }
 
 
