@@ -80,7 +80,7 @@ struct PaywallTimelineView: View {
                     }
 
                 }
-                .toggleStyle(SwitchToggleStyle(tint: .gray))
+                .toggleStyle(SwitchToggleStyle(tint: .white.opacity(0.18)))
                 .padding(.horizontal, 24)
                 .padding(.top, 6)
 
