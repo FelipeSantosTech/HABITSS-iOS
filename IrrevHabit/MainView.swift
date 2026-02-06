@@ -55,7 +55,7 @@ struct MainView: View {
     private func standardCard(for index: Int) -> some View {
         let standard = store.standards[index]
         
-        VStack(spacing: 16) {
+        VStack(spacing: 13) {
             
         HStack {
             Text(standard.title)
