@@ -27,25 +27,24 @@ struct PaywallTimelineView: View {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 32) {
-                
-                HStack {
-                    Spacer()
-
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .foregroundColor(.gray)
-                            .padding()
-                    }
-                }
 
 
                 Spacer()
+                VStack(spacing: 10) {
 
-                Text("How your free trial works")
-                    .font(.title2)
-                    .foregroundColor(.white)
+                    Text("How your free trial works")
+                        .font(.system(size: 34, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 10)
+
+
+                    Text("You won't be charged anything today.")
+                        .font(.system(size: 17))
+                        .foregroundColor(.white.opacity(0.65))
+                }
+                .padding(.top, 40)
+                .padding(.bottom, 16)
+
 
                 TimelineCardView(
                     startDate: today,
@@ -80,6 +79,29 @@ struct PaywallTimelineView: View {
 
                 Spacer(minLength: 24)
             }
+            
+            // CLOSE BUTTON (SCREEN LEVEL)
+            VStack {
+                HStack {
+                    Spacer()
+
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.85))
+                            .padding(16)
+                            .opacity(0.8)
+
+                    }
+                }
+
+                Spacer()
+            }
+            .padding(.top, 20)
+            .padding(.trailing, 10)
+
         }
     }
 }

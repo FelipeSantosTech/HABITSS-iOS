@@ -306,13 +306,9 @@ struct SetupView: View {
                 .foregroundColor(
                     standard.isSuper
                     ? Color.white.opacity(0.9)
-                    : Color.white.opacity(0.25)
+                    : Color.white.opacity(0.3)
                 )
                 .padding(6)
-                .background(
-                    Circle()
-                        .fill(Color.white.opacity(0.05))
-                )
         }
         .buttonStyle(.plain)
     }
