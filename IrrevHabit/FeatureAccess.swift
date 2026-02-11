@@ -11,10 +11,6 @@ struct FeatureAccess {
         return isPro
     }
 
-    static func canUseWidgets(isPro: Bool) -> Bool {
-        return isPro
-    }
-
     static func canUseDisciplineTools(isPro: Bool) -> Bool {
         return isPro
     }

@@ -170,7 +170,7 @@ struct HistoryView: View {
             if record.standardID == standardID &&
                calendar.isDate(record.date, inSameDayAs: day) {
 
-                print("MATCH FOUND →", standardID, day, record.status)
+               // print("MATCH FOUND →", standardID, day, record.status)
                 return record.status
             }
         }

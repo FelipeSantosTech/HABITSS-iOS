@@ -61,11 +61,6 @@ struct ProToolsSection: View {
         
         VStack(spacing: 16) {
             
-            ProToolCard(
-                icon: "rectangle.grid.2x2",
-                title: "Widgets",
-                subtitle: "Home screen history and execution"
-            )
             
             ProToolCard(
                 icon: "lock.iphone",
