@@ -145,6 +145,25 @@ class StandardsStore: ObservableObject {
 
         history = decoded
     }
+    
+    func resetAllData() {
+
+        // Clear in-memory
+        standards = []
+        history = []
+
+        // Reset flags
+        areStandardsLocked = false
+        hasCompletedOnboarding = false
+
+        // Reset execution date
+        lastExecutionDate = 0
+
+        // Clear persisted storage
+        standardsData = Data()
+        dailyHistoryData = Data()
+    }
+
 
 }
 

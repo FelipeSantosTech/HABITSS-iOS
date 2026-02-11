@@ -12,35 +12,47 @@ struct MainView: View {
     @State private var showTemporaryEditSheet = false
 
     var body: some View {
-        
-        
-        ZStack{
+
+        ZStack(alignment: .bottom) {
+
             Color.black.ignoresSafeArea()
+
             ScrollView {
-            VStack(alignment: .leading, spacing: 32) {
-                //header
-                ScreenHeader(
-                    eyebrow: "Execute",
-                    title: "Today's habits"
-                )
-                
-                
-                if store.isDayComplete {
-                    Text("Day complete. Come back tomorrow.")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                }
-                
-                //standards
-                VStack(spacing: 16) {
-                    ForEach(store.standards.indices, id: \.self) { index in
-                        standardCard(for: index)
+                VStack(alignment: .leading, spacing: 32) {
+
+                    ScreenHeader(
+                        eyebrow: "Execute",
+                        title: "Today's habits"
+                    )
+
+                    if store.isDayComplete {
+                        Text("Day complete. Come back tomorrow.")
+                            .font(.footnote)
+                            .foregroundColor(.gray)
                     }
+
+                    VStack(spacing: 16) {
+                        ForEach(store.standards.indices, id: \.self) { index in
+                            standardCard(for: index)
+                        }
+                    }
+
+                    Spacer(minLength: 24)
                 }
-                Spacer()
+                .padding()
             }
-            .padding()
-        }
+
+            // 👇 Bottom fade (IDENTICAL behavior to HistoryView)
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0.0),
+                    Color.black.opacity(1.0)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 14)
+            .allowsHitTesting(false)
         }
         .sheet(isPresented: $showTemporaryEditSheet) {
             if let habit = editingTemporaryHabit {
@@ -52,6 +64,8 @@ struct MainView: View {
             store.resetForNewDayIfNeeded()
         }
     }
+
+    
     @ViewBuilder
     private func standardCard(for index: Int) -> some View {
         let standard = store.standards[index]
