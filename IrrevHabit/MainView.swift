@@ -16,21 +16,21 @@ struct MainView: View {
         
         ZStack{
             Color.black.ignoresSafeArea()
-            
+            ScrollView {
             VStack(alignment: .leading, spacing: 32) {
                 //header
                 ScreenHeader(
                     eyebrow: "Execute",
                     title: "Today's habits"
                 )
-
+                
                 
                 if store.isDayComplete {
                     Text("Day complete. Come back tomorrow.")
                         .font(.footnote)
                         .foregroundColor(.gray)
                 }
-
+                
                 //standards
                 VStack(spacing: 16) {
                     ForEach(store.standards.indices, id: \.self) { index in
@@ -40,6 +40,7 @@ struct MainView: View {
                 Spacer()
             }
             .padding()
+        }
         }
         .sheet(isPresented: $showTemporaryEditSheet) {
             if let habit = editingTemporaryHabit {
