@@ -68,7 +68,7 @@ struct PaywallTimelineView: View {
                     VStack(alignment: .leading, spacing: 2) {
 
                         Text(trialEnabled
-                             ? "Start with Free Trial"
+                             ? "Free trial enabled"
                              : "Not sure? Start with a free trial")
                             .foregroundColor(.white)
 
